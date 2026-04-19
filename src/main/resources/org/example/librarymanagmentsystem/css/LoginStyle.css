@@ -1,0 +1,61 @@
+.left-form{
+    -fx-background-color: #5b0739;
+    -fx-border-color:#000;
+    -fx-border-width: .4px 0px .4px .4px;
+}
+
+.right-form{
+    -fx-background-color:#fff;
+    -fx-border-color:#000;
+    -fx-border-width: .4px .4px .4px 0px;
+}
+
+.close{
+     -fx-background-color: transparent;
+     -fx-cursor: hand;
+ }
+
+.close:hover{
+    -fx-background-color:#FF3852;
+}
+
+.textfield{
+    -fx-background-color: linear-gradient(to bottom, #efefef, #eee);
+    -fx-background-radius: 10px;
+    -fx-border-radius:10px;
+    -fx-border-width: .4px;
+    -fx-border-color: #000;
+}
+
+.login-btn{
+    -fx-background-color: transparent;
+    -fx-background-radius: 10px;
+    -fx-border-width: .4px;
+    -fx-font-size: 14px;
+    -fx-font-family: "Arial Black";
+    -fx-border-radius:10px;
+    -fx-border-color: #000;
+    -fx-transition: 0.3s;
+}
+
+.login-btn:hover{
+    -fx-background-color: #b93636;
+    -fx-text-fill: #fff;
+}
+
+.telaCadastrarBtn{
+    -fx-background-color:#8fb38d;
+    -fx-background-radius: 10px;
+    -fx-border-radius:10px;
+    -fx-border-width: .4px;
+    -fx-border-color: #000;
+}
+
+.telaCadastrarBtn:hover{
+    -fx-background-color: #126b04;
+}
+
+.area{
+    -fx-border-width: .4px;
+    -fx-border-color: #000;
+}

@@ -1,16 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.VBox?>
+<?import de.jensd.fx.glyphs.fontawesome.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<?import javafx.scene.control.Button?>
-<VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
-      fx:controller="org.example.librarymanagmentsystem.controller.LoginController">
-    <padding>
-        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
-    </padding>
-
-    <Label fx:id="welcomeText"/>
-    <Button text="Hello!" onAction="#onHelloButtonClick"/>
-</VBox>
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="450.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.librarymanagmentsystem.controller.LoginController">
+    <children>
+        <AnchorPane fx:id="main_form" prefHeight="200.0" prefWidth="200.0">
+            <children>
+                <AnchorPane prefHeight="450.0" prefWidth="350.0" styleClass="left-form" stylesheets="">
+                    <children>
+                        <Label alignment="CENTER" layoutX="44.0" layoutY="277.0" prefHeight="38.0" prefWidth="263.0" text="SISTEMA DE CANDIDATURA" textFill="WHITE">
+                            <font>
+                                <Font name="Arial Black" size="17.0" />
+                            </font>
+                        </Label>
+                        <FontAwesomeIconView fill="WHITE" glyphName="EXPEDITEDSSL" layoutX="103.0" layoutY="241.0" size="12em" />
+                        <Label alignment="CENTER" layoutX="44.0" layoutY="296.0" prefHeight="38.0" prefWidth="263.0" text="A VAGAS DE" textFill="WHITE">
+                            <font>
+                                <Font name="Arial Black" size="17.0" />
+                            </font>
+                        </Label>
+                        <Label alignment="CENTER" layoutX="44.0" layoutY="315.0" prefHeight="38.0" prefWidth="263.0" text="PROGRAMAÇÃO" textFill="WHITE">
+                            <font>
+                                <Font name="Arial Black" size="17.0" />
+                            </font>
+                        </Label>
+                    </children></AnchorPane>
+                <AnchorPane layoutX="350.0" layoutY="1.0" prefHeight="450.0" prefWidth="350.0" styleClass="right-form" stylesheets="">
+                    <children>
+                        <FontAwesomeIconView glyphName="USER" layoutX="154.0" layoutY="136.0" size="5em" />
+                        <Label layoutX="129.0" layoutY="145.0" text="ENTRAR" textFill="#c91782">
+                            <font>
+                                <Font name="Arial Black" size="20.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="usuario" layoutX="65.0" layoutY="183.0" onAction="#loginAdmin" prefHeight="38.0" prefWidth="220.0" promptText="Usuário" styleClass="textfield" stylesheets="">
+                            <font>
+                                <Font name="Arial Black" size="12.0" />
+                            </font></TextField>
+                        <PasswordField fx:id="password" layoutX="65.0" layoutY="232.0" onAction="#loginAdmin" prefHeight="38.0" prefWidth="220.0" promptText="Senha" styleClass="textfield" stylesheets="@">
+                            <font>
+                                <Font name="Arial Black" size="12.0" />
+                            </font></PasswordField>
+                        <Button fx:id="loginBtn" layoutX="128.0" layoutY="281.0" mnemonicParsing="false" onAction="#loginAdmin" prefHeight="30.0" prefWidth="95.0" styleClass="login-btn" stylesheets="@" text="entrar">
+                            <font>
+                                <Font name="Arial Black" size="12.0" />
+                            </font>
+                        </Button>
+                        <Button fx:id="close" layoutX="285.0" layoutY="14.0" mnemonicParsing="false" onAction="#close" styleClass="close" stylesheets="" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="1.0">
+                            <graphic>
+                                <FontAwesomeIconView glyphName="CLOSE" size="1.2em" styleClass="close" tabSize="12" text="" textAlignment="CENTER" wrappingWidth="40.0" />
+                            </graphic>
+                        </Button>
+                    </children></AnchorPane>
+            </children>
+        </AnchorPane>
+    </children>
+</StackPane>

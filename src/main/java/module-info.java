@@ -1,6 +1,7 @@
 module org.example.librarymanagmentsystem {
     requires javafx.controls;
     requires javafx.fxml;
+    requires java.sql;
 
 
     opens org.example.librarymanagmentsystem to javafx.fxml;
