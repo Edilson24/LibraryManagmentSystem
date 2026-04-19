@@ -98,7 +98,7 @@
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>
-                                org.example.librarymanagmentsystem/org.example.librarymanagmentsystem.HelloApplication
+                                org.example.librarymanagmentsystem/org.example.librarymanagmentsystem.aplication.HelloApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
