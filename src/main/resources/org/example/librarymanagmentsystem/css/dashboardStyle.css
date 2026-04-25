@@ -79,7 +79,8 @@
 
 .nav-button{
     -fx-background-color: transparent;
-    -fx-font-family: "Arial Black";
+    -fx-border-color: transparent;
+
 }
 
 .sombra{

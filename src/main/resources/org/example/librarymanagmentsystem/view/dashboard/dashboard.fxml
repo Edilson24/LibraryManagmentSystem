@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.BarChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
@@ -12,7 +13,7 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="764.0" prefWidth="1331.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="764.0" prefWidth="1331.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.librarymanagmentsystem.controller.DashBoardController">
    <children>
       <AnchorPane prefHeight="765.0" prefWidth="1331.0" styleClass="root" stylesheets="@../../css/dashboardStyle.css">
          <children>
@@ -102,15 +103,65 @@
                   <Font name="Segoe UI" size="11.0" />
                </font>
             </Label>
-            <AnchorPane fx:id="telaEstudante_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+            <AnchorPane fx:id="telaEstudante_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" visible="false" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
                <children>
-                  <Label layoutX="27.0" layoutY="10.0" text="Registro de estudantes" textFill="#1b5e90">
+                  <Label fx:id="estudante_form" layoutX="27.0" layoutY="10.0" text="Registro de estudantes" textFill="#1b5e90">
                      <font>
                         <Font name="Arial Black" size="26.0" />
                      </font>
                   </Label>
                </children>
             </AnchorPane>
+            <AnchorPane fx:id="livros_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+               <children>
+                  <Label layoutX="27.0" layoutY="10.0" text="Registro de Livros" textFill="#1b5e90">
+                     <font>
+                        <Font name="Arial Black" size="26.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="relatorio_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+               <children>
+                  <Label layoutX="33.0" layoutY="14.0" text="Registro de Imprestimos" textFill="#1b5e90" AnchorPane.rightAnchor="733.0">
+                     <font>
+                        <Font name="Arial Black" size="26.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+            <Label fx:id="dasboard_btn" layoutX="15.0" layoutY="105.0" onMouseClicked="#mudarTela" prefHeight="26.0" prefWidth="174.0" text="Dashboard" textFill="WHITE">
+               <font>
+                  <Font name="Arial Black" size="17.0" />
+               </font>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
+            </Label>
+            <Label fx:id="estudantes_btn" layoutX="15.0" layoutY="137.0" onMouseClicked="#mudarTela" prefHeight="26.0" prefWidth="174.0" text="Estudantes" textFill="WHITE">
+               <font>
+                  <Font name="Arial Black" size="17.0" />
+               </font>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
+            </Label>
+            <Label fx:id="livros_btn" layoutX="15.0" layoutY="170.0" onMouseClicked="#mudarTela" prefHeight="26.0" prefWidth="174.0" text="Livros" textFill="WHITE">
+               <font>
+                  <Font name="Arial Black" size="17.0" />
+               </font>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
+            </Label>
+            <Label fx:id="relatorio_btn" layoutX="14.0" layoutY="201.0" onMouseClicked="#mudarTela" prefHeight="26.0" prefWidth="174.0" text="Relatório" textFill="WHITE">
+               <font>
+                  <Font name="Arial Black" size="17.0" />
+               </font>
+               <padding>
+                  <Insets left="25.0" />
+               </padding>
+            </Label>
          </children>
       </AnchorPane>
    </children>

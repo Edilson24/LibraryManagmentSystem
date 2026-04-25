@@ -41,8 +41,6 @@
         </dependency>
 
         <!-- PDF Export -->
-
-
         <dependency>
             <groupId>com.github.librepdf</groupId>
             <artifactId>openpdf</artifactId>
@@ -95,6 +93,14 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>21.0.6</version>
+        </dependency>
+
+        <!-- Source: https://mvnrepository.com/artifact/org.openjfx/javafx-graphics -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>24.0.2-ea+1</version>
+            <scope>compile</scope>
         </dependency>
 
         <dependency>
