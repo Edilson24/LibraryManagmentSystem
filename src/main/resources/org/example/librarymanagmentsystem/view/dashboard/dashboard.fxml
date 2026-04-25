@@ -1,14 +1,117 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import java.lang.String?>
+<?import javafx.scene.chart.BarChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="CONTROLLER_NAME"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="764.0" prefWidth="1331.0" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <AnchorPane prefHeight="765.0" prefWidth="1331.0" styleClass="root" stylesheets="@../../css/dashboardStyle.css">
+         <children>
+            <AnchorPane fx:id="dashboard_form" layoutX="208.0" layoutY="31.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+               <children>
+                  <Label layoutX="27.0" layoutY="10.0" text="Dashboard" textFill="#1b5e90">
+                     <font>
+                        <Font name="Arial Black" size="26.0" />
+                     </font>
+                  </Label>
+                  <AnchorPane layoutX="27.0" layoutY="51.0" prefHeight="143.0" prefWidth="345.0" styleClass="card-Requerentes" stylesheets="@../../css/dashboardStyle.css" AnchorPane.leftAnchor="27.0">
+                     <children>
+                        <Label layoutX="30.0" layoutY="20.0" text="Requerentes" textFill="#1b5e90" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
+                           <font>
+                              <Font name="Segoe UI Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="30.0" layoutY="57.0" text="0" textFill="#1b5e90">
+                           <font>
+                              <Font name="Segoe UI Bold" size="51.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
+                  <AnchorPane layoutX="383.0" layoutY="51.0" prefHeight="143.0" prefWidth="345.0" styleClass="card-livrosDisponiveis" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="384.0">
+                     <children>
+                        <Label layoutX="31.0" layoutY="23.0" text="Livros Disponiveis" textFill="#1b5e90" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="20.0">
+                           <font>
+                              <Font name="Segoe UI Bold" size="18.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="24.0" layoutY="59.0" text="0" textFill="#1b5e90">
+                           <font>
+                              <Font name="Segoe UI Bold" size="51.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
+                  <AnchorPane layoutX="747.0" layoutY="51.0" prefHeight="143.0" prefWidth="345.0" styleClass="card-porvir" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="27.0">
+                     <children>
+                        <Label layoutX="49.0" layoutY="29.0" text="Livros Disponiveis" textFill="#1b5e90">
+                           <font>
+                              <Font name="Segoe UI Bold" size="18.0" />
+                           </font>
+                        </Label>
+                     </children></AnchorPane>
+                  <AnchorPane layoutX="31.0" layoutY="220.0" prefHeight="276.0" prefWidth="698.0" stylesheets="@../../css/dashboardStyle.css" AnchorPane.bottomAnchor="252.0" AnchorPane.leftAnchor="27.0" AnchorPane.rightAnchor="384.0" AnchorPane.topAnchor="206.0">
+                     <styleClass>
+                        <String fx:value="chart-conteiner" />
+                        <String fx:value="sombra" />
+                     </styleClass>
+                     <children>
+                        <BarChart layoutX="-51.0" layoutY="-101.0" prefHeight="299.0" prefWidth="650.0" titleSide="LEFT" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <xAxis>
+                            <CategoryAxis side="BOTTOM" />
+                          </xAxis>
+                          <yAxis>
+                            <NumberAxis side="LEFT" />
+                          </yAxis>
+                        </BarChart>
+                     </children>
+                  </AnchorPane>
+                  <AnchorPane layoutX="740.0" layoutY="206.0" prefHeight="266.0" prefWidth="345.0" styleClass="card-porvir" stylesheets="@../../css/dashboardStyle.css" AnchorPane.bottomAnchor="252.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="206.0" />
+                  <AnchorPane layoutX="740.0" layoutY="483.0" prefHeight="218.0" prefWidth="345.0" styleClass="card-porvir" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="27.0" />
+                  <AnchorPane layoutX="29.0" layoutY="483.0" prefHeight="218.0" prefWidth="698.0" stylesheets="@../../css/dashboardStyle.css">
+                     <styleClass>
+                        <String fx:value="chart-conteiner" />
+                        <String fx:value="sombra" />
+                     </styleClass>
+                     <children>
+                        <TableView layoutX="103.0" layoutY="9.0" prefHeight="218.0" prefWidth="698.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <columns>
+                            <TableColumn prefWidth="75.0" text="C1" />
+                            <TableColumn prefWidth="75.0" text="C2" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </children>
+            </AnchorPane>
+            <Label layoutX="56.0" layoutY="682.0" text="Edilson Hilário" textFill="WHITE">
+               <font>
+                  <Font name="Segoe UI Bold" size="16.0" />
+               </font>
+            </Label>
+            <Circle fill="DODGERBLUE" layoutX="34.0" layoutY="695.0" radius="20.0" stroke="BLACK" strokeType="INSIDE" />
+            <Label layoutX="56.0" layoutY="700.0" text="Administrador" textFill="#ffffffd3">
+               <font>
+                  <Font name="Segoe UI" size="11.0" />
+               </font>
+            </Label>
+            <AnchorPane fx:id="telaEstudante_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+               <children>
+                  <Label layoutX="27.0" layoutY="10.0" text="Registro de estudantes" textFill="#1b5e90">
+                     <font>
+                        <Font name="Arial Black" size="26.0" />
+                     </font>
+                  </Label>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

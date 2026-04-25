@@ -1,5 +1,5 @@
 .left-form{
-    -fx-background-color: #3549a1;
+    -fx-background-color: linear-gradient(to bottom, #5c74c9, #14266b);;
     -fx-border-color:#000;
     -fx-border-width: .4px 0px .4px .4px;
 }
@@ -39,7 +39,7 @@
 }
 
 .login-btn:hover{
-    -fx-background-color: #b93636;
+    -fx-background-color: #3549a1;
     -fx-text-fill: #fff;
 }
 
