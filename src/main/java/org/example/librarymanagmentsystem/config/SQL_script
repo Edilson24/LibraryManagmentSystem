@@ -1,0 +1,55 @@
+create database sismon_db;
+
+CREATE TABLE `disciplinas` (
+  `id_disciplina` int NOT NULL AUTO_INCREMENT,
+  `nome_disciplina` varchar(50) NOT NULL,
+  PRIMARY KEY (`id_disciplina`),
+  UNIQUE KEY `nome_disciplina` (`nome_disciplina`)
+);
+
+CREATE TABLE `livros` (
+  `id_livro` int NOT NULL AUTO_INCREMENT,
+  `titulo` varchar(150) NOT NULL,
+  `autor` varchar(100) DEFAULT NULL,
+  `ano_publicacao` int DEFAULT NULL,
+  `isbn` varchar(20) DEFAULT NULL,
+  `status` enum('Disponível','Emprestado','Manutenção') DEFAULT 'Disponível',
+  `categoria` varchar(45) DEFAULT NULL,
+  `unidades` int DEFAULT NULL,
+  `fk_disciplina` int DEFAULT NULL,
+  PRIMARY KEY (`id_livro`),
+  UNIQUE KEY `isbn` (`isbn`),
+  KEY `fk_livro_disciplina` (`fk_disciplina`),
+  CONSTRAINT `fk_livro_disciplina` FOREIGN KEY (`fk_disciplina`) REFERENCES `disciplinas` (`id_disciplina`) ON DELETE SET NULL
+);
+
+CREATE TABLE `estudantes` (
+  `id_estudante` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `curso` varchar(20) NOT NULL,
+  `id_cartao_arduino` varchar(50) NOT NULL,
+  `data_cadastro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `idade` int DEFAULT NULL,
+  `departamento` varchar(45) DEFAULT NULL,
+  `codigo_estudante` varchar(45) DEFAULT NULL,
+  PRIMARY KEY (`id_estudante`),
+  UNIQUE KEY `id_cartao_arduino` (`id_cartao_arduino`),
+  UNIQUE KEY `codigo_estudante` (`codigo_estudante`)
+);
+
+CREATE TABLE `emprestimos` (
+  `id_emprestimo` int NOT NULL AUTO_INCREMENT,
+  `fk_estudante` int NOT NULL,
+  `fk_livro` int NOT NULL,
+  `data_saida` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `data_prevista_devolucao` date NOT NULL,
+  `data_devolucao_real` date DEFAULT NULL,
+  `valor_multa` decimal(10,2) DEFAULT '0.00',
+  `pago` tinyint(1) DEFAULT '0',
+  PRIMARY KEY (`id_emprestimo`),
+  KEY `fk_estudante` (`fk_estudante`),
+  KEY `fk_livro` (`fk_livro`),
+  CONSTRAINT `emprestimos_ibfk_1` FOREIGN KEY (`fk_estudante`) REFERENCES `estudantes` (`id_estudante`) ON DELETE CASCADE,
+  CONSTRAINT `emprestimos_ibfk_2` FOREIGN KEY (`fk_livro`) REFERENCES `livros` (`id_livro`) ON DELETE CASCADE
+);
+

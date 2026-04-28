@@ -8,7 +8,7 @@ public class Conexao {
         String url, user, password;
 
         try {
-            url = "jdbc:mysql://localhost:3306/nome_base_de_dados?useSSL=false&serverTimezone=UTC";
+            url = "jdbc:mysql://localhost:3306/sismon_db?useSSL=false&serverTimezone=UTC";
             user = "root";
             password = "root";
 
@@ -21,5 +21,4 @@ public class Conexao {
             return null;
         }
     }
-
 }
