@@ -2,6 +2,8 @@ module org.example.librarymanagmentsystem {
     requires javafx.controls;
     requires javafx.fxml;
     requires java.sql;
+    requires itextpdf;
+    requires java.desktop;
 
 
     opens org.example.librarymanagmentsystem to javafx.fxml;
@@ -10,4 +12,6 @@ module org.example.librarymanagmentsystem {
     opens org.example.librarymanagmentsystem.aplication to javafx.fxml;
     exports org.example.librarymanagmentsystem.controller;
     opens org.example.librarymanagmentsystem.controller to javafx.fxml;
+    exports org.example.librarymanagmentsystem.services;
+    opens org.example.librarymanagmentsystem.services to javafx.fxml;
 }

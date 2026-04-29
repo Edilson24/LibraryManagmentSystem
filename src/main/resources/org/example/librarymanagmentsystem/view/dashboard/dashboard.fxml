@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -12,7 +13,7 @@
          <children>
 
             <!-- DASHBOARD -->
-            <AnchorPane fx:id="dashboard_form" layoutX="208.0" layoutY="31.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+            <AnchorPane fx:id="dashboard_form" layoutX="208.0" layoutY="31.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" visible="false" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
                <children>
 
                   <!-- Row de Cards Modernos -->
@@ -22,10 +23,9 @@
                         <AnchorPane layoutX="0.0" layoutY="0.0" prefHeight="150.0" prefWidth="240.0" styleClass="card-modern" stylesheets="@../../css/dashboardStyle.css">
                            <children>
                               <Circle fill="#1b5e9020" layoutX="40.0" layoutY="75.0" radius="40.0" />
-                              <Label layoutX="40.0" layoutY="60.0" style="-fx-font-size: 40px;" text="👨‍🎓" />
-                              <Label layoutX="90.0" layoutY="55.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Total" />
+                              <Label layoutX="13.0" layoutY="46.0" style="-fx-font-size: 40px;" text="👨‍🎓" />
+                              <Label layoutX="94.0" layoutY="56.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Total de estudantes" />
                               <Label fx:id="lblTotalEstudantes" layoutX="90.0" layoutY="75.0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #1b5e90;" text="0" />
-                              <Label layoutX="90.0" layoutY="105.0" style="-fx-font-size: 12px; -fx-text-fill: #999;" text="Estudantes" />
                            </children>
                         </AnchorPane>
 
@@ -33,10 +33,9 @@
                         <AnchorPane layoutX="260.0" layoutY="0.0" prefHeight="150.0" prefWidth="240.0" styleClass="card-modern" stylesheets="@../../css/dashboardStyle.css">
                            <children>
                               <Circle fill="#4caf5020" layoutX="40.0" layoutY="75.0" radius="40.0" />
-                              <Label layoutX="40.0" layoutY="60.0" style="-fx-font-size: 40px;" text="📚" />
-                              <Label layoutX="90.0" layoutY="55.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Disponíveis" />
+                              <Label layoutX="26.0" layoutY="45.0" style="-fx-font-size: 40px;" text="📚" />
+                              <Label layoutX="90.0" layoutY="55.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Livros Disponíveis" />
                               <Label fx:id="lblLivrosDisponiveis" layoutX="90.0" layoutY="75.0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #4caf50;" text="0" />
-                              <Label layoutX="90.0" layoutY="105.0" style="-fx-font-size: 12px; -fx-text-fill: #999;" text="Livros" />
                            </children>
                         </AnchorPane>
 
@@ -44,10 +43,9 @@
                         <AnchorPane layoutX="520.0" layoutY="0.0" prefHeight="150.0" prefWidth="240.0" styleClass="card-modern" stylesheets="@../../css/dashboardStyle.css">
                            <children>
                               <Circle fill="#ff980020" layoutX="40.0" layoutY="75.0" radius="40.0" />
-                              <Label layoutX="40.0" layoutY="60.0" style="-fx-font-size: 40px;" text="🔄" />
-                              <Label layoutX="90.0" layoutY="55.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Empréstimos" />
+                              <Label layoutX="22.0" layoutY="47.0" style="-fx-font-size: 40px;" text="🔄" />
+                              <Label layoutX="90.0" layoutY="55.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Empréstimos Ativos" />
                               <Label fx:id="lblEmprestimosAtivos" layoutX="90.0" layoutY="75.0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #ff9800;" text="0" />
-                              <Label layoutX="90.0" layoutY="105.0" style="-fx-font-size: 12px; -fx-text-fill: #999;" text="Ativos" />
                            </children>
                         </AnchorPane>
 
@@ -55,10 +53,9 @@
                         <AnchorPane layoutX="780.0" layoutY="0.0" prefHeight="150.0" prefWidth="240.0" styleClass="card-modern" stylesheets="@../../css/dashboardStyle.css">
                            <children>
                               <Circle fill="#f4433620" layoutX="40.0" layoutY="75.0" radius="40.0" />
-                              <Label layoutX="40.0" layoutY="60.0" style="-fx-font-size: 40px;" text="💰" />
-                              <Label layoutX="90.0" layoutY="55.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Multas" />
+                              <Label layoutX="21.0" layoutY="44.0" style="-fx-font-size: 40px;" text="💰" />
+                              <Label layoutX="90.0" layoutY="55.0" style="-fx-font-size: 14px; -fx-text-fill: #666;" text="Multas Pendentes" />
                               <Label fx:id="lblMultasPendentes" layoutX="90.0" layoutY="75.0" style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #f44336;" text="0" />
-                              <Label layoutX="90.0" layoutY="105.0" style="-fx-font-size: 12px; -fx-text-fill: #999;" text="Pendentes" />
                            </children>
                         </AnchorPane>
                      </children>
@@ -98,7 +95,7 @@
             </Label>
 
             <!-- TELA DE GESTÃO DE ESTUDANTE -->
-            <AnchorPane fx:id="telaEstudante_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" visible="false" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+            <AnchorPane fx:id="telaEstudante_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
                <children>
                   <!-- Título -->
                   <Label layoutX="27.0" layoutY="10.0" text="Gestão de Estudantes" textFill="#1b5e90">
@@ -108,7 +105,7 @@
                   </Label>
 
                   <!-- Formulário de Cadastro -->
-                  <AnchorPane layoutX="27.0" layoutY="60.0" prefHeight="350.0" prefWidth="450.0" styleClass="form-container">
+                  <AnchorPane layoutX="27.0" layoutY="60.0" prefHeight="394.0" prefWidth="452.0" styleClass="form-container">
                      <children>
                         <Label layoutX="20.0" layoutY="15.0" text="CADASTRAR ESTUDANTE" textFill="#1b5e90">
                            <font><Font name="Segoe UI Bold" size="16.0" /></font>
@@ -116,31 +113,49 @@
 
                         <!-- Nome -->
                         <Label layoutX="20.0" layoutY="55.0" text="Nome Completo:" />
-                        <TextField fx:id="txtNome" layoutX="20.0" layoutY="75.0" prefHeight="35.0" prefWidth="410.0" promptText="Digite o nome completo" />
+                        <TextField fx:id="txtNome" layoutX="20.0" layoutY="75.0" prefHeight="35.0" prefWidth="410.0" promptText="Digite o nome completo" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="Arial Black" size="12.0" />
+                           </font></TextField>
 
                         <!-- Curso e Departamento -->
                         <Label layoutX="20.0" layoutY="125.0" text="Curso:" />
-                        <TextField fx:id="txtCurso" layoutX="20.0" layoutY="145.0" prefHeight="35.0" prefWidth="195.0" promptText="Curso" />
+                        <TextField fx:id="txtCurso" layoutX="20.0" layoutY="145.0" prefHeight="35.0" prefWidth="195.0" promptText="Curso" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="Arial Black" size="12.0" />
+                           </font></TextField>
 
                         <Label layoutX="235.0" layoutY="125.0" text="Departamento:" />
-                        <TextField fx:id="txtDepartamento" layoutX="235.0" layoutY="145.0" prefHeight="35.0" prefWidth="195.0" promptText="Departamento" />
+                        <TextField fx:id="txtDepartamento" layoutX="235.0" layoutY="145.0" prefHeight="35.0" prefWidth="195.0" promptText="Departamento" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="Arial Black" size="12.0" />
+                           </font></TextField>
 
                         <!-- Idade e Código -->
                         <Label layoutX="20.0" layoutY="195.0" text="Idade:" />
-                        <TextField fx:id="txtIdade" layoutX="20.0" layoutY="215.0" prefHeight="35.0" prefWidth="195.0" promptText="Idade" />
+                        <TextField fx:id="txtIdade" layoutX="20.0" layoutY="215.0" prefHeight="35.0" prefWidth="195.0" promptText="Idade" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="Arial Black" size="12.0" />
+                           </font></TextField>
 
                         <Label layoutX="235.0" layoutY="195.0" text="Código Estudante:" />
-                        <TextField fx:id="txtCodigoEstudante" layoutX="235.0" layoutY="215.0" prefHeight="35.0" prefWidth="195.0" promptText="Matrícula/RA" />
+                        <TextField fx:id="txtCodigoEstudante" layoutX="235.0" layoutY="215.0" prefHeight="35.0" prefWidth="195.0" promptText="Matrícula/RA" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="Arial Black" size="12.0" />
+                           </font></TextField>
 
                         <!-- RFID Card -->
                         <Label layoutX="20.0" layoutY="265.0" text="ID Cartão RFID (Arduino):" />
-                        <TextField fx:id="txtCartaoArduino" layoutX="20.0" layoutY="285.0" prefHeight="35.0" prefWidth="410.0" promptText="Aproxime o cartão do leitor" />
+                        <TextField fx:id="txtCartaoArduino" layoutX="20.0" layoutY="285.0" prefHeight="35.0" prefWidth="410.0" promptText="Aproxime o cartão do leitor" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="Arial Black" size="12.0" />
+                           </font></TextField>
 
                         <!-- Botões -->
-                        <Button fx:id="btnSalvar" layoutX="20.0" layoutY="340.0" onAction="#salvarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Salvar" />
-                        <Button fx:id="btnAtualizar" layoutX="130.0" layoutY="340.0" onAction="#atualizarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-warning" text="Atualizar" />
-                        <Button fx:id="btnDeletar" layoutX="240.0" layoutY="340.0" onAction="#deletarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Deletar" />
-                        <Button fx:id="btnLimpar" layoutX="350.0" layoutY="340.0" onAction="#limparCampos" prefHeight="35.0" prefWidth="100.0" styleClass="btn-secondary" text="Limpar" />
+                        <Button fx:id="btnSalvar" layoutX="10.0" layoutY="340.0" onAction="#salvarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Salvar" />
+                        <Button fx:id="btnAtualizar" layoutX="120.0" layoutY="340.0" onAction="#atualizarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-warning" text="Atualizar" />
+                        <Button fx:id="btnDeletar" layoutX="230.0" layoutY="340.0" onAction="#deletarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Deletar" />
+                        <Button fx:id="btnLimpar" layoutX="340.0" layoutY="340.0" onAction="#limparCampos" prefHeight="35.0" prefWidth="100.0" styleClass="btn-secondary" text="Limpar" />
                      </children>
                   </AnchorPane>
 
@@ -152,7 +167,10 @@
                         </Label>
 
                         <!-- Campo de busca -->
-                        <TextField fx:id="txtBuscar" layoutX="20.0" layoutY="45.0" onKeyReleased="#buscarEstudantes" prefHeight="35.0" prefWidth="400.0" promptText="Buscar por nome, código ou RFID" />
+                        <TextField fx:id="txtBuscar" layoutX="20.0" layoutY="45.0" onKeyReleased="#buscarEstudantes" prefHeight="35.0" prefWidth="400.0" promptText="Buscar por nome, código ou RFID" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></TextField>
                         <Button layoutX="430.0" layoutY="45.0" onAction="#buscarEstudantes" prefHeight="35.0" prefWidth="135.0" styleClass="btn-primary" text="Buscar" />
 
                         <!-- TableView -->
@@ -186,28 +204,40 @@
                         </Label>
 
                         <Label layoutX="20.0" layoutY="55.0" text="Título:" />
-                        <TextField fx:id="txtTitulo" layoutX="20.0" layoutY="75.0" prefHeight="35.0" prefWidth="460.0" promptText="Título do livro" />
+                        <TextField fx:id="txtTitulo" layoutX="20.0" layoutY="75.0" prefHeight="35.0" prefWidth="460.0" promptText="Título do livro" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></TextField>
 
                         <Label layoutX="20.0" layoutY="125.0" text="Autor:" />
-                        <TextField fx:id="txtAutor" layoutX="20.0" layoutY="145.0" prefHeight="35.0" prefWidth="460.0" promptText="Autor" />
+                        <TextField fx:id="txtAutor" layoutX="20.0" layoutY="145.0" prefHeight="35.0" prefWidth="460.0" promptText="Autor" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></TextField>
 
                         <Label layoutX="20.0" layoutY="195.0" text="ISBN:" />
-                        <TextField fx:id="txtISBN" layoutX="20.0" layoutY="215.0" prefHeight="35.0" prefWidth="220.0" promptText="ISBN" />
+                        <TextField fx:id="txtISBN" layoutX="20.0" layoutY="215.0" prefHeight="35.0" prefWidth="220.0" promptText="ISBN" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></TextField>
 
                         <Label layoutX="260.0" layoutY="195.0" text="Ano Publicação:" />
-                        <TextField fx:id="txtAnoPublicacao" layoutX="260.0" layoutY="215.0" prefHeight="35.0" prefWidth="220.0" promptText="Ano" />
+                        <TextField fx:id="txtAnoPublicacao" layoutX="260.0" layoutY="215.0" prefHeight="35.0" prefWidth="220.0" promptText="Ano" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></TextField>
 
                         <Label layoutX="20.0" layoutY="265.0" text="Categoria:" />
-                        <ComboBox fx:id="cbCategoria" layoutX="20.0" layoutY="285.0" prefHeight="35.0" prefWidth="220.0" promptText="Selecione a categoria" />
+                        <ComboBox fx:id="cbCategoria" layoutX="20.0" layoutY="285.0" prefHeight="35.0" prefWidth="220.0" promptText="Selecione a categoria" styleClass="comboStyle" stylesheets="@../../css/dashboardStyle.css" />
 
                         <Label layoutX="260.0" layoutY="265.0" text="Disciplina:" />
-                        <ComboBox fx:id="cbDisciplina" layoutX="260.0" layoutY="285.0" prefHeight="35.0" prefWidth="220.0" promptText="Selecione a disciplina" />
+                        <ComboBox fx:id="cbDisciplina" layoutX="260.0" layoutY="285.0" prefHeight="35.0" prefWidth="220.0" promptText="Selecione a disciplina" styleClass="comboStyle" stylesheets="@../../css/dashboardStyle.css" />
 
                         <Label layoutX="20.0" layoutY="335.0" text="Unidades:" />
-                        <Spinner fx:id="spUnidades" layoutX="20.0" layoutY="355.0" prefHeight="35.0" prefWidth="120.0" />
+                        <Spinner fx:id="spUnidades" layoutX="20.0" layoutY="355.0" prefHeight="35.0" prefWidth="120.0" styleClass="textfield" stylesheets="@../../css/dashboardStyle.css" />
 
                         <Label layoutX="160.0" layoutY="335.0" text="Status:" />
-                        <ComboBox fx:id="cbStatus" layoutX="160.0" layoutY="355.0" prefHeight="35.0" prefWidth="150.0" />
+                        <ComboBox fx:id="cbStatus" layoutX="160.0" layoutY="355.0" prefHeight="35.0" prefWidth="150.0" styleClass="comboStyle" stylesheets="@../../css/dashboardStyle.css" />
 
                         <Button fx:id="btnSalvarLivro" layoutX="20.0" layoutY="405.0" onAction="#salvarLivro" prefHeight="35.0" prefWidth="100.0" styleClass="btn-primary" text="Salvar" />
                         <Button fx:id="btnLimparLivro" layoutX="130.0" layoutY="405.0" onAction="#limparCamposLivro" prefHeight="35.0" prefWidth="100.0" styleClass="btn-secondary" text="Limpar" />
@@ -229,7 +259,7 @@
 
             <!-- TELA DE GESTAO DE  -->
             <!-- Tela de Empréstimos -->
-            <AnchorPane fx:id="emprestimos_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+            <AnchorPane fx:id="emprestimos_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" visible="false" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
                <children>
                   <Label layoutX="27.0" layoutY="10.0" text="Gestão de Empréstimos" textFill="#1b5e90">
                      <font><Font name="Arial Black" size="26.0" /></font>
@@ -258,19 +288,34 @@
                            <font><Font name="Segoe UI Bold" size="14.0" /></font>
                         </Label>
 
-                        <Label layoutX="20.0" layoutY="50.0" text="Nome:" />
+                        <Label layoutX="20.0" layoutY="50.0" text="Nome:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblNomeEstudante" layoutX="150.0" layoutY="50.0" style="-fx-font-weight: bold;" text="-" />
 
-                        <Label layoutX="20.0" layoutY="80.0" text="Curso:" />
+                        <Label layoutX="20.0" layoutY="80.0" text="Curso:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblCursoEstudante" layoutX="150.0" layoutY="80.0" text="-" />
 
-                        <Label layoutX="20.0" layoutY="110.0" text="Código:" />
+                        <Label layoutX="20.0" layoutY="110.0" text="Código:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblCodigoEstudante" layoutX="150.0" layoutY="110.0" text="-" />
 
-                        <Label layoutX="400.0" layoutY="50.0" text="Empréstimos Ativos:" />
+                        <Label layoutX="400.0" layoutY="50.0" text="Empréstimos Ativos:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblQtdEmprestimos" layoutX="550.0" layoutY="50.0" style="-fx-font-weight: bold; -fx-text-fill: #ff9800;" text="0" />
 
-                        <Label layoutX="400.0" layoutY="80.0" text="Multa Pendente:" />
+                        <Label layoutX="400.0" layoutY="80.0" text="Multa Pendente:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblMultaPendente" layoutX="550.0" layoutY="80.0" style="-fx-font-weight: bold; -fx-text-fill: #f44336;" text="R$ 0,00" />
                      </children>
                   </AnchorPane>
@@ -282,19 +327,34 @@
                            <font><Font name="Segoe UI Bold" size="14.0" /></font>
                         </Label>
 
-                        <Label layoutX="20.0" layoutY="50.0" text="Título:" />
+                        <Label layoutX="20.0" layoutY="50.0" text="Título:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblTituloLivro" layoutX="150.0" layoutY="50.0" style="-fx-font-weight: bold;" text="-" />
 
-                        <Label layoutX="20.0" layoutY="80.0" text="Autor(es):" />
+                        <Label layoutX="20.0" layoutY="80.0" text="Autor(es):">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblAutoresLivro" layoutX="150.0" layoutY="80.0" text="-" />
 
-                        <Label layoutX="20.0" layoutY="110.0" text="Unidades Disp.:" />
+                        <Label layoutX="20.0" layoutY="110.0" text="Unidades Disp.:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblUnidadesDisponiveis" layoutX="150.0" layoutY="110.0" style="-fx-font-weight: bold; -fx-text-fill: #4caf50;" text="0" />
 
-                        <Label layoutX="400.0" layoutY="50.0" text="Categoria:" />
+                        <Label layoutX="400.0" layoutY="50.0" text="Categoria:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblCategoriaLivro" layoutX="520.0" layoutY="50.0" text="-" />
 
-                        <Label layoutX="400.0" layoutY="80.0" text="Disciplina:" />
+                        <Label layoutX="400.0" layoutY="80.0" text="Disciplina:">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                         <Label fx:id="lblDisciplinaLivro" layoutX="520.0" layoutY="80.0" text="-" />
                      </children>
                   </AnchorPane>
@@ -339,13 +399,99 @@
 
 
             <!-- TELA DE GESTAO DE RELATORIOS -->
+            <!-- Tela de Relatórios - Substitua o conteúdo do AnchorPane com id="relatorio_form" -->
             <AnchorPane fx:id="relatorio_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" visible="false" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
                <children>
-                  <Label layoutX="33.0" layoutY="14.0" text="Registro de Relatórios" textFill="#1b5e90" AnchorPane.rightAnchor="733.0">
+                  <Label layoutX="27.0" layoutY="10.0" text="📊 Central de Relatórios" textFill="#1b5e90">
                      <font>
                         <Font name="Arial Black" size="26.0" />
                      </font>
                   </Label>
+
+                  <!-- Painel de Controles -->
+                  <AnchorPane layoutX="27.0" layoutY="60.0" prefHeight="180.0" prefWidth="1050.0" styleClass="form-container">
+                     <children>
+                        <Label layoutX="20.0" layoutY="15.0" text="🔍 CONFIGURAÇÃO DO RELATÓRIO" textFill="#1b5e90">
+                           <font><Font name="Segoe UI Bold" size="16.0" /></font>
+                        </Label>
+
+                        <!-- Tipo de Relatório -->
+                        <Label layoutX="20.0" layoutY="55.0" text="Tipo de Relatório:" />
+                        <ComboBox fx:id="cbTipoRelatorio" layoutX="20.0" layoutY="75.0" prefHeight="35.0" prefWidth="250.0" promptText="Selecione o tipo de relatório">
+                           <items>
+                              <FXCollections fx:factory="observableArrayList">
+                        <!--<String fx:value="📚 Livros" />-->
+                        <!--<String fx:value="👨‍🎓 Estudantes" />-->
+                        <!--<String fx:value="🔄 Empréstimos" />-->
+                        <!--<String fx:value="💰 Multas" />-->
+                        <!-- <String fx:value="📈 Estatísticas" />-->
+                     </FXCollections>
+                  </items>
+               </ComboBox>
+
+               <!-- Filtros (inicialmente invisíveis) -->
+                        <Label fx:id="lblFiltroDataInicio" layoutX="300.0" layoutY="55.0" text="Data Início:" visible="false" />
+                        <DatePicker fx:id="dpDataInicio" layoutX="300.0" layoutY="75.0" prefHeight="35.0" prefWidth="180.0" promptText="dd/MM/yyyy" visible="false" />
+
+                        <Label fx:id="lblFiltroDataFim" layoutX="510.0" layoutY="55.0" text="Data Fim:" visible="false" />
+                        <DatePicker fx:id="dpDataFim" layoutX="510.0" layoutY="75.0" prefHeight="35.0" prefWidth="180.0" promptText="dd/MM/yyyy" visible="false" />
+
+                        <!-- Status (para empréstimos) -->
+                        <Label fx:id="lblStatus" layoutX="720.0" layoutY="55.0" text="Status:" visible="false" />
+                        <ComboBox fx:id="cbStatusEmprestimo" layoutX="720.0" layoutY="75.0" prefHeight="35.0" prefWidth="150.0" promptText="Todos" visible="false">
+                           <items>
+                              <FXCollections fx:factory="observableArrayList">
+                                 <!--<String fx:value="Todos" />-->
+                                 <!--<String fx:value="Ativos" /> -->
+                                 <!--<String fx:value="Finalizados" />-->
+                              </FXCollections>
+                           </items>
+                        </ComboBox>
+
+                        <!-- Curso (para estudantes) -->
+                        <Label fx:id="lblCurso" layoutX="300.0" layoutY="55.0" text="Curso:" visible="false" />
+                        <ComboBox fx:id="cbCurso" layoutX="300.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="Todos os cursos" visible="false" />
+
+                        <!-- Botão Gerar Relatório -->
+                        <Button layoutX="20.0" layoutY="130.0" onAction="#gerarRelatorio" prefHeight="40.0" prefWidth="200.0" styleClass="btn-primary" text="🔍 GERAR RELATÓRIO">
+                           <font><Font size="14.0" /></font>
+                        </Button>
+
+                        <!-- Botão Imprimir PDF -->
+                        <Button layoutX="240.0" layoutY="130.0" onAction="#imprimirPDF" prefHeight="40.0" prefWidth="200.0" styleClass="btn-success" text="📄 IMPRIMIR PDF">
+                           <font><Font size="14.0" /></font>
+                        </Button>
+
+                        <!-- Botão Exportar Excel (opcional) -->
+                        <Button layoutX="460.0" layoutY="130.0" onAction="#exportarExcel" prefHeight="40.0" prefWidth="200.0" styleClass="btn-warning" text="📊 EXPORTAR EXCEL">
+                           <font><Font size="14.0" /></font>
+                        </Button>
+                     </children>
+                  </AnchorPane>
+
+                  <!-- Tabela de Resultados -->
+                  <AnchorPane layoutX="27.0" layoutY="255.0" prefHeight="440.0" prefWidth="1050.0" styleClass="table-container">
+                     <children>
+                        <Label layoutX="20.0" layoutY="15.0" text="📋 RESULTADOS" textFill="#1b5e90">
+                           <font><Font name="Segoe UI Bold" size="16.0" /></font>
+                        </Label>
+
+                        <!-- Campo de busca na tabela -->
+                        <TextField fx:id="txtBuscarTabela" layoutX="20.0" layoutY="45.0" onKeyReleased="#buscarNaTabela" prefHeight="35.0" prefWidth="300.0" promptText="🔍 Buscar na tabela..." />
+                        <Label fx:id="lblTotalRegistros" layoutX="900.0" layoutY="50.0" text="Total: 0 registros" textFill="#666" />
+
+                        <!-- TableView principal -->
+                        <TableView fx:id="tabelaResultados" layoutX="15.0" layoutY="95.0" prefHeight="325.0" prefWidth="1020.0">
+                           <columns>
+                              <TableColumn fx:id="col1" prefWidth="50.0" text="ID" />
+                              <TableColumn fx:id="col2" prefWidth="200.0" text="Nome/Título" />
+                              <TableColumn fx:id="col3" prefWidth="150.0" text="Detalhe" />
+                              <TableColumn fx:id="col4" prefWidth="120.0" text="Data" />
+                              <TableColumn fx:id="col5" prefWidth="100.0" text="Status" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
                </children>
             </AnchorPane>
 

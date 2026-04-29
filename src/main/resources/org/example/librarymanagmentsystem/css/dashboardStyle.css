@@ -102,6 +102,7 @@
     -fx-border-radius: 10px;
     -fx-border-width: .4px;
     -fx-border-color: #000;
+    -fx-font-family: "Arial Black";
 }
 
 .textfield{
@@ -259,4 +260,63 @@
     -fx-font-size: 11px;
     -fx-text-fill: #666;
     -fx-font-style: italic;
+}
+
+/* Estilo para ListView do Dashboard */
+.list-view-modern {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+}
+
+.list-view-modern .list-cell {
+    -fx-background-color: white;
+    -fx-padding: 12;
+    -fx-border-color: #f0f0f0;
+    -fx-border-width: 0 0 1 0;
+    -fx-font-size: 13px;
+}
+
+.list-view-modern .list-cell:hover {
+    -fx-background-color: #e3f2fd;
+    -fx-cursor: hand;
+}
+
+.list-view-modern .list-cell:selected {
+    -fx-background-color: #1b5e90;
+    -fx-text-fill: white;
+}
+
+/* ScrollBar personalizada */
+.list-view-modern .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.list-view-modern .scroll-bar:vertical .thumb {
+    -fx-background-color: #1b5e90;
+    -fx-background-radius: 10;
+}
+
+/* Botão Sucesso (Verde) */
+.btn-success {
+    -fx-background-color: #4caf50;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+    -fx-cursor: hand;
+}
+
+.btn-success:hover {
+    -fx-background-color: #45a049;
+}
+
+/* DatePicker personalizado */
+.date-picker .text-field {
+    -fx-background-radius: 5;
+    -fx-border-color: #ddd;
+    -fx-border-radius: 5;
+}
+
+.date-picker .arrow-button {
+    -fx-background-color: #1b5e90;
+    -fx-background-radius: 0 5 5 0;
 }

@@ -13,7 +13,7 @@ public class Conexao {
             password = "root";
 
             Connection conn = DriverManager.getConnection(url, user, password);
-            System.out.println("Conexão realizada com sucesso!");
+            //System.out.println("Conexão realizada com sucesso!");
             return conn;
         } catch (Exception e) {
             System.err.println("ERRO DE CONEXAO");

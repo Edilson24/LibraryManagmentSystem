@@ -10,6 +10,7 @@ public class Estudante extends Pessoa{
     private boolean ativo;
 
 
+
     // Construtor completo
     public Estudante(int id, String nome, int idade, String departamento, String curso, String idCartaoArduino, String codigoEstudante) {
         super(id, nome, idade, departamento);

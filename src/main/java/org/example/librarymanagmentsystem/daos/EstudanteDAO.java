@@ -133,4 +133,11 @@ public class EstudanteDAO {
         estudante.setDataCadastro(rs.getTimestamp("data_cadastro").toLocalDateTime().toLocalDate());
         return estudante;
     }
+
+    public Estudante buscarPorId(int idEstudante) {
+        return buscarPorId(idEstudante);
+    }
+
+    public List<Estudante> buscarPorNome(String busca) {
+    }
 }
