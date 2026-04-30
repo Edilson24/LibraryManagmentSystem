@@ -1,31 +1,41 @@
 package org.example.librarymanagmentsystem.entidades;
 
+import java.time.LocalDate;
 import java.util.Objects;
 
-public class Estudante extends Pessoa{
+public class Estudante extends Pessoa {
     // Atributos específicos do Estudante
     private String curso;
     private String idCartaoArduino;  // RFID do cartão
     private String codigoEstudante;   // Matrícula/RA
     private boolean ativo;
 
-
-
-    // Construtor completo
-    public Estudante(int id, String nome, int idade, String departamento, String curso, String idCartaoArduino, String codigoEstudante) {
-        super(id, nome, idade, departamento);
+    // Construtor completo (com ID)
+    public Estudante(int id, String nome, int idade, String departamento,
+                     String curso, String idCartaoArduino, String codigoEstudante) {
+        super(id, nome, idade, departamento);  // ← Passa os valores corretamente
         this.curso = curso;
         this.idCartaoArduino = idCartaoArduino;
         this.codigoEstudante = codigoEstudante;
         this.ativo = true;
     }
 
-    // Construtor para novo cadastro (sem ID)
-    public Estudante(String nome, int idade, String departamento, String curso, String idCartaoArduino, String codigoEstudante) {
-        super(nome, idade, departamento);
+    // Construtor para novo cadastro (sem ID) - CORRIGIDO
+    public Estudante(String nome, int idade, String departamento,
+                     String curso, String idCartaoArduino, String codigoEstudante) {
+        super(nome, idade, departamento);  // ← Passa os valores como parâmetros
         this.curso = curso;
         this.idCartaoArduino = idCartaoArduino;
         this.codigoEstudante = codigoEstudante;
+        this.ativo = true;
+    }
+
+    // Construtor padrão (vazio) para uso em TableView
+    public Estudante() {
+        super("", 0, "");  // ← Valores padrão
+        this.curso = "";
+        this.idCartaoArduino = "";
+        this.codigoEstudante = "";
         this.ativo = true;
     }
 
@@ -82,10 +92,10 @@ public class Estudante extends Pessoa{
 
     // Método específico para verificar se o estudante pode fazer empréstimo
     public boolean podePegarLivro() {
-        return ativo;  // Pode adicionar mais regras depois
+        return ativo;
     }
 
-    // Método para formatar os dados do cartão RFID (será usado pelo Arduino)
+    // Método para formatar os dados do cartão RFID
     public String gerarDadosCartao() {
         return String.format("%s|%s|%s", idCartaoArduino, codigoEstudante, getNome());
     }

@@ -159,7 +159,7 @@ public class EstudanteController implements Initializable {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
-                estudanteDAO.deletar(estudanteSelecionado.getId();
+                estudanteDAO.deletar(estudanteSelecionado.getId());
                 mostrarSucesso("Estudante deletado com sucesso!");
                 limparCampos();
                 carregarDados();
@@ -183,7 +183,7 @@ public class EstudanteController implements Initializable {
 
     @FXML
     private void buscarEstudantes() {
-        String busca = txtBuscar.getText().trim();
+        /*String busca = txtBuscar.getText().trim();
         if (busca.isEmpty()) {
             carregarDados();
             return;
@@ -195,7 +195,7 @@ public class EstudanteController implements Initializable {
                 estudantesList.clear();
                 estudantesList.addAll(resultados);
             });
-        }).start();
+        }).start();*/
     }
 
     private void preencherCampos(Estudante e) {
