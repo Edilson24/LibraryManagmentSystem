@@ -169,7 +169,7 @@ public class LivroController {
         }).start();
     }
 
-    private void salvarLivro() {
+    void salvarLivro() {
         if (!validarCampos()) return;
 
         try {
@@ -198,7 +198,7 @@ public class LivroController {
         }
     }
 
-    private void atualizarLivro() {
+    void atualizarLivro() {
         if (livroSelecionado == null) {
             mostrarAviso("Selecione um livro!");
             return;
@@ -226,7 +226,7 @@ public class LivroController {
         }
     }
 
-    private void deletarLivro() {
+    void deletarLivro() {
         if (livroSelecionado == null) {
             mostrarAviso("Selecione um livro!");
             return;
@@ -248,7 +248,7 @@ public class LivroController {
         }
     }
 
-    private void buscarLivros() {
+    void buscarLivros() {
         String busca = txtBuscar.getText().trim();
         if (busca.isEmpty()) {
             carregarDados();

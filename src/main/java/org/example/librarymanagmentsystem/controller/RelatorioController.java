@@ -258,7 +258,7 @@ public class RelatorioController {
         }
     }
 
-    private void filtrarTabela() {
+    void filtrarTabela() {
         String filtro = txtBuscarTabela.getText().toLowerCase();
         if (filtro.isEmpty()) {
             carregarRelatorio();

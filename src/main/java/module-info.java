@@ -4,6 +4,7 @@ module org.example.librarymanagmentsystem {
     requires java.sql;
     requires itextpdf;
     requires java.desktop;
+    requires jsr305;
 
 
     opens org.example.librarymanagmentsystem to javafx.fxml;

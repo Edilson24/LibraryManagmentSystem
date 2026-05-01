@@ -177,7 +177,7 @@ public class EstudanteController {
         }
     }
 
-    private void deletarEstudante() {
+    void deletarEstudante() {
         if (estudanteSelecionado == null) {
             mostrarAviso("Selecione um estudante na tabela!");
             return;
@@ -201,7 +201,7 @@ public class EstudanteController {
         }
     }
 
-    private void buscarEstudantes() {
+    void buscarEstudantes() {
         String busca = txtBuscar.getText().trim();
         if (busca.isEmpty()) {
             carregarDados();

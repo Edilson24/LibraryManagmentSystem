@@ -5,18 +5,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.chart.BarChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import org.example.librarymanagmentsystem.daos.EstudanteDAO;
+import org.example.librarymanagmentsystem.entidades.*;
 import org.example.librarymanagmentsystem.services.DashboardService;
 
 import java.net.URL;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class DashBoardController implements Initializable {
+
+    private EstudanteDAO estudanteDAO;
+    private Estudante estudanteSelecionado;
+    private ObservableList<Estudante> estudantesList;
 
     // ==================== COMPONENTES DO DASHBOARD ====================
     @FXML private Label lblTotalEstudantes;
@@ -25,9 +30,8 @@ public class DashBoardController implements Initializable {
     @FXML private Label lblMultasPendentes;
     @FXML private ListView<String> listaUltimosEmprestimos;
     @FXML private ListView<String> listaTopLivros;
-    @FXML private BarChart<String, Number> graficoEmprestimos;
 
-    // ==================== TELAS PRINCIPAIS (AnchorPanes) ====================
+    // ==================== TELAS PRINCIPAIS ====================
     @FXML private AnchorPane dashboard_form;
     @FXML private AnchorPane telaEstudante_form;
     @FXML private AnchorPane livros_form;
@@ -44,16 +48,21 @@ public class DashBoardController implements Initializable {
     // ==================== COMPONENTES DA TELA ESTUDANTES ====================
     @FXML private TextField txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
     @FXML private TextField txtBuscarEstudante;
-    @FXML private TableView<?> tabelaEstudantes;
-    @FXML private TableColumn<?, ?> colId, colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID;
-    @FXML private Button btnSalvarEstudante, btnAtualizarEstudante, btnDeletarEstudante, btnLimparEstudante;
+    @FXML private TableView<Estudante> tabelaEstudantes;
+    @FXML private TableColumn<Estudante, Integer> colId;
+    @FXML private TableColumn<Estudante, String> colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID;
+    @FXML private Button btnSalvar, btnAtualizar, btnDeletar, btnLimpar;
 
     // ==================== COMPONENTES DA TELA LIVROS ====================
     @FXML private TextField txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades;
     @FXML private TextField txtBuscarLivro;
-    @FXML private ComboBox<?> cbDisciplina, cbStatus;
-    @FXML private TableView<?> tabelaLivros;
-    @FXML private TableColumn<?, ?> colLivroId, colTitulo, colAutor, colStatus, colCategoria, colDisciplina, colUnidades;
+    @FXML private ComboBox<String> cbCategoria;
+    @FXML private ComboBox<Disciplina> cbDisciplina;
+    @FXML private ComboBox<String> cbStatus;
+    @FXML private Spinner<Integer> spUnidades;
+    @FXML private TableView<Livro> tabelaLivros;
+    @FXML private TableColumn<Livro, Integer> colLivroId, colUnidades;
+    @FXML private TableColumn<Livro, String> colTitulo, colAutor, colStatus, colCategoria, colDisciplina;
     @FXML private Button btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro;
     @FXML private TextArea txtCitacao, txtBibliografia;
 
@@ -62,18 +71,20 @@ public class DashBoardController implements Initializable {
     @FXML private Label lblNomeEstudante, lblCursoEstudante, lblCodigoEstudante;
     @FXML private Label lblQtdEmprestimos, lblMultaPendente;
     @FXML private Label lblTituloLivro, lblAutoresLivro, lblUnidadesDisponiveis, lblCategoriaLivro, lblDisciplinaLivro;
-    @FXML private TableView<?> tabelaEmprestimosAtivos;
-    @FXML private TableColumn<?, ?> colEmprestimoId, colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo, colMultaEmprestimo;
+    @FXML private TableView<Emprestimo> tabelaEmprestimosAtivos;
+    @FXML private TableColumn<Emprestimo, Integer> colEmprestimoId;
+    @FXML private TableColumn<Emprestimo, String> colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo;
+    @FXML private TableColumn<Emprestimo, Double> colMultaEmprestimo;
 
     // ==================== COMPONENTES DA TELA RELATÓRIOS ====================
     @FXML private ComboBox<String> cbTipoRelatorio;
     @FXML private DatePicker dpDataInicio, dpDataFim;
-    @FXML private ComboBox<String> cbStatusEmprestimo, cbCurso;
+    @FXML private ComboBox<String> cbStatusEmprestimoRelatorio, cbCursoRelatorio;
     @FXML private Label lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso;
     @FXML private Label lblTotalRegistros;
     @FXML private TextField txtBuscarTabela;
-    @FXML private TableView<?> tabelaResultados;
-    @FXML private TableColumn<?, ?> col1, col2, col3, col4, col5;
+    @FXML private TableView<ObservableList<String>> tabelaResultados;
+    @FXML private TableColumn<ObservableList<String>, String> col1, col2, col3, col4, col5;
 
     // ==================== CONTROLLERS SECUNDÁRIOS ====================
     private EstudanteController estudanteController;
@@ -87,51 +98,41 @@ public class DashBoardController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        try {
-            dashboardService = new DashboardService();
-            ultimosEmprestimosList = FXCollections.observableArrayList();
-            topLivrosList = FXCollections.observableArrayList();
+        dashboardService = new DashboardService();
+        ultimosEmprestimosList = FXCollections.observableArrayList();
+        topLivrosList = FXCollections.observableArrayList();
 
-            // Configurar ListViews do Dashboard
-            listaUltimosEmprestimos.setItems(ultimosEmprestimosList);
-            listaTopLivros.setItems(topLivrosList);
+        listaUltimosEmprestimos.setItems(ultimosEmprestimosList);
+        listaTopLivros.setItems(topLivrosList);
 
-            // INICIALIZAR OS CONTROLLERS SECUNDÁRIOS
-            inicializarControllers();
+        inicializarControllers();
+        configurarSpinner();
 
-            // Configurar tela inicial
-            dashboard_form.setVisible(true);
-            telaEstudante_form.setVisible(false);
-            livros_form.setVisible(false);
-            emprestimos_form.setVisible(false);
-            relatorio_form.setVisible(false);
+        dashboard_form.setVisible(true);
+        telaEstudante_form.setVisible(false);
+        livros_form.setVisible(false);
+        emprestimos_form.setVisible(false);
+        relatorio_form.setVisible(false);
 
-            // Estilo do botão Dashboard
-            dasboard_btn.setStyle("-fx-background-color: #ffffff33; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-radius: 5px;");
+        dasboard_btn.setStyle("-fx-background-color: #ffffff33; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-radius: 5px;");
 
-            // Carregar dados do dashboard
-            carregarDadosDashboard();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            mostrarErro("Erro ao inicializar: " + e.getMessage());
-        }
+        carregarDadosDashboard();
     }
 
-    /**
-     * Inicializa todos os controllers secundários passando os componentes FXML
-     */
+    private void configurarSpinner() {
+        spUnidades = new Spinner<>(1, 999, 1);
+    }
+
     private void inicializarControllers() {
         // Inicializar EstudanteController
         estudanteController = new EstudanteController();
         estudanteController.inicializar(
                 txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino,
                 txtBuscarEstudante, tabelaEstudantes, colId, colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID,
-                btnSalvarEstudante, btnAtualizarEstudante, btnDeletarEstudante, btnLimparEstudante
+                btnSalvar, btnAtualizar, btnDeletar, btnLimpar
         );
 
         // Inicializar LivroController
-        livroController = new LivroController();
         livroController.inicializar(
                 txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades,
                 txtBuscarLivro, cbDisciplina, cbStatus, tabelaLivros,
@@ -139,6 +140,7 @@ public class DashBoardController implements Initializable {
                 btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro,
                 txtCitacao, txtBibliografia
         );
+
 
         // Inicializar EmprestimoController
         emprestimoController = new EmprestimoController();
@@ -153,7 +155,7 @@ public class DashBoardController implements Initializable {
         // Inicializar RelatorioController
         relatorioController = new RelatorioController();
         relatorioController.inicializar(
-                cbTipoRelatorio, dpDataInicio, dpDataFim, cbStatusEmprestimo, cbCurso,
+                cbTipoRelatorio, dpDataInicio, dpDataFim, cbStatusEmprestimoRelatorio, cbCursoRelatorio,
                 lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso,
                 lblTotalRegistros, txtBuscarTabela, tabelaResultados, col1, col2, col3, col4, col5
         );
@@ -165,41 +167,34 @@ public class DashBoardController implements Initializable {
     public void mudarTela(MouseEvent event) {
         Label btnClicado = (Label) event.getSource();
 
-        // Esconder todas as telas
         dashboard_form.setVisible(false);
         telaEstudante_form.setVisible(false);
         livros_form.setVisible(false);
         emprestimos_form.setVisible(false);
         relatorio_form.setVisible(false);
 
-        // Resetar estilos dos botões
         resetarEstilosBotoes();
 
-        // Ativar tela selecionada
         if (btnClicado == dasboard_btn) {
             dashboard_form.setVisible(true);
             aplicarEstiloAtivo(dasboard_btn);
             carregarDadosDashboard();
-
         } else if (btnClicado == estudantes_btn) {
             telaEstudante_form.setVisible(true);
             aplicarEstiloAtivo(estudantes_btn);
-            estudanteController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
-
+            estudanteController.carregarDados();
         } else if (btnClicado == livros_btn) {
             livros_form.setVisible(true);
             aplicarEstiloAtivo(livros_btn);
-            livroController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
-
+            livroController.carregarDados();
         } else if (btnClicado == emprestimos_btn) {
             emprestimos_form.setVisible(true);
             aplicarEstiloAtivo(emprestimos_btn);
-            emprestimoController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
-
+            emprestimoController.carregarDados();
         } else if (btnClicado == relatorio_btn) {
             relatorio_form.setVisible(true);
             aplicarEstiloAtivo(relatorio_btn);
-            relatorioController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
+            relatorioController.carregarDados();
         }
     }
 
@@ -221,7 +216,6 @@ public class DashBoardController implements Initializable {
         carregarCardsDashboard();
         carregarUltimosEmprestimos();
         carregarTopLivros();
-        carregarGraficoDashboard();
     }
 
     private void carregarCardsDashboard() {
@@ -246,7 +240,7 @@ public class DashBoardController implements Initializable {
 
     private void carregarUltimosEmprestimos() {
         new Thread(() -> {
-            try (ResultSet rs = dashboardService.getUltimosEmprestimos()) {
+            try (var rs = dashboardService.getUltimosEmprestimos()) {
                 ObservableList<String> items = FXCollections.observableArrayList();
                 while (rs.next()) {
                     String item = String.format("#%d | %s | %s",
@@ -267,7 +261,7 @@ public class DashBoardController implements Initializable {
 
     private void carregarTopLivros() {
         new Thread(() -> {
-            try (ResultSet rs = dashboardService.getTopLivros()) {
+            try (var rs = dashboardService.getTopLivros()) {
                 ObservableList<String> items = FXCollections.observableArrayList();
                 int rank = 1;
                 while (rs.next()) {
@@ -285,14 +279,232 @@ public class DashBoardController implements Initializable {
         }).start();
     }
 
-    private void carregarGraficoDashboard() {
-        // Implementar gráfico depois
+    // ==================== MÉTODOS REDIRECIONADORES ESTUDANTES ====================
+
+    private void mostrarSucesso(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Sucesso");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 
     private void mostrarErro(String msg) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erro");
+        alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+
+    private void mostrarAviso(String msg) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Aviso");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    private boolean validarCampos() {
+        if (txtNome.getText().trim().isEmpty()) {
+            mostrarAviso("Preencha o nome do estudante!");
+            txtNome.requestFocus();
+            return false;
+        }
+        if (txtCurso.getText().trim().isEmpty()) {
+            mostrarAviso("Preencha o curso!");
+            txtCurso.requestFocus();
+            return false;
+        }
+        if (txtCodigoEstudante.getText().trim().isEmpty()) {
+            mostrarAviso("Preencha o código do estudante!");
+            txtCodigoEstudante.requestFocus();
+            return false;
+        }
+        if (txtCartaoArduino.getText().trim().isEmpty()) {
+            mostrarAviso("Preencha o ID do cartão RFID!");
+            txtCartaoArduino.requestFocus();
+            return false;
+        }
+        if (txtIdade.getText().trim().isEmpty()) {
+            mostrarAviso("Preencha a idade!");
+            txtIdade.requestFocus();
+            return false;
+        }
+        return true;
+    }
+
+    public void limparCampos() {
+        txtNome.clear();
+        txtCurso.clear();
+        txtDepartamento.clear();
+        txtIdade.clear();
+        txtCodigoEstudante.clear();
+        txtCartaoArduino.clear();
+        estudanteSelecionado = null;
+        tabelaEstudantes.getSelectionModel().clearSelection();
+    }
+
+    public void carregarDados() {
+        new Thread(() -> {
+            try {
+                List<Estudante> estudantes = estudanteDAO.listarTodos();
+                Platform.runLater(() -> {
+                    estudantesList.clear();
+                    estudantesList.addAll(estudantes);
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> mostrarErro("Erro ao carregar: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    @FXML
+    public void salvarrEstudante() {
+        if (!validarCampos()) return;
+
+        try {
+            Estudante estudante = new Estudante(
+                    txtNome.getText().trim(),
+                    Integer.parseInt(txtIdade.getText()),
+                    txtDepartamento.getText().trim(),
+                    txtCurso.getText().trim(),
+                    txtCartaoArduino.getText().trim(),
+                    txtCodigoEstudante.getText().trim()
+            );
+
+            estudanteDAO.inserir(estudante);
+            mostrarSucesso("Estudante cadastrado com sucesso!");
+            limparCampos();
+            carregarDados();
+        } catch (SQLException e) {
+            if (e.getMessage().contains("Duplicate entry")) {
+                mostrarErro("Código de estudante ou cartão RFID já existe!");
+            } else {
+                mostrarErro("Erro ao salvar: " + e.getMessage());
+            }
+        } catch (NumberFormatException e) {
+            mostrarErro("Idade deve ser um número válido!");
+        }
+    }
+
+    @FXML
+    public void atualizarEstudante() {
+        if (estudanteSelecionado == null) {
+            mostrarAviso("Selecione um estudante na tabela!");
+            return;
+        }
+
+        if (!validarCampos()) return;
+
+        try {
+            estudanteSelecionado.setNome(txtNome.getText().trim());
+            estudanteSelecionado.setCurso(txtCurso.getText().trim());
+            estudanteSelecionado.setDepartamento(txtDepartamento.getText().trim());
+            estudanteSelecionado.setIdade(Integer.parseInt(txtIdade.getText()));
+            estudanteSelecionado.setCodigoEstudante(txtCodigoEstudante.getText().trim());
+            estudanteSelecionado.setIdCartaoArduino(txtCartaoArduino.getText().trim());
+
+            estudanteDAO.atualizar(estudanteSelecionado);
+            mostrarSucesso("Estudante atualizado com sucesso!");
+            limparCampos();
+            carregarDados();
+        } catch (SQLException e) {
+            mostrarErro("Erro ao atualizar: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            mostrarErro("Idade deve ser um número válido!");
+        }
+    }
+
+    @FXML
+    public void deletarEstudante() {
+        estudanteController.deletarEstudante();
+    }
+
+    @FXML
+    public void limparCamposEstudante() {
+        estudanteController.limparCampos();
+    }
+
+    @FXML
+    public void buscarEstudantes() {
+        estudanteController.buscarEstudantes();
+    }
+
+    // ==================== MÉTODOS REDIRECIONADORES LIVROS ====================
+
+    @FXML
+    public void salvarLivro() {
+        livroController.salvarLivro();
+    }
+
+    @FXML
+    public void atualizarLivro() {
+        livroController.atualizarLivro();
+    }
+
+    @FXML
+    public void deletarLivro() {
+        livroController.deletarLivro();
+    }
+
+    @FXML
+    public void limparCamposLivro() {
+        livroController.limparCampos();
+    }
+
+    @FXML
+    public void buscarLivros() {
+        livroController.buscarLivros();
+    }
+
+    // ==================== MÉTODOS REDIRECIONADORES EMPRÉSTIMOS ====================
+
+    @FXML
+    public void buscarPorRFID() {
+        emprestimoController.buscarPorRFID();
+    }
+
+    @FXML
+    public void buscarLivro() {
+        emprestimoController.buscarLivro();
+    }
+
+    @FXML
+    public void realizarEmprestimo() {
+        emprestimoController.realizarEmprestimo();
+    }
+
+    @FXML
+    public void realizarDevolucao() {
+        emprestimoController.realizarDevolucao();
+    }
+
+    @FXML
+    public void limparTelaEmprestimo() {
+        emprestimoController.limparTela();
+    }
+
+    // ==================== MÉTODOS REDIRECIONADORES RELATÓRIOS ====================
+
+    @FXML
+    public void gerarRelatorio() {
+        relatorioController.gerarRelatorio();
+    }
+
+    @FXML
+    public void imprimirPDF() {
+        relatorioController.imprimirPDF();
+    }
+
+    @FXML
+    public void exportarExcel() {
+        relatorioController.exportarExcel();
+    }
+
+    @FXML
+    public void buscarNaTabela() {
+        relatorioController.filtrarTabela();
     }
 }
