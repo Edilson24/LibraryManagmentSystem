@@ -11,6 +11,7 @@ import javafx.scene.layout.AnchorPane;
 import org.example.librarymanagmentsystem.daos.EstudanteDAO;
 import org.example.librarymanagmentsystem.entidades.*;
 import org.example.librarymanagmentsystem.services.DashboardService;
+import org.example.librarymanagmentsystem.controller.LivroController;
 
 import java.net.URL;
 import java.sql.SQLException;
@@ -79,7 +80,7 @@ public class DashBoardController implements Initializable {
     // ==================== COMPONENTES DA TELA RELATÓRIOS ====================
     @FXML private ComboBox<String> cbTipoRelatorio;
     @FXML private DatePicker dpDataInicio, dpDataFim;
-    @FXML private ComboBox<String> cbStatusEmprestimoRelatorio, cbCursoRelatorio;
+    @FXML private ComboBox<String> cbStatusEmprestimoRelatorio, cbCurso;
     @FXML private Label lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso;
     @FXML private Label lblTotalRegistros;
     @FXML private TextField txtBuscarTabela;
@@ -124,41 +125,64 @@ public class DashBoardController implements Initializable {
     }
 
     private void inicializarControllers() {
-        // Inicializar EstudanteController
+        // Instanciar controllers PRIMEIRO
         estudanteController = new EstudanteController();
-        estudanteController.inicializar(
-                txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino,
-                txtBuscarEstudante, tabelaEstudantes, colId, colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID,
-                btnSalvar, btnAtualizar, btnDeletar, btnLimpar
-        );
-
-        // Inicializar LivroController
-        livroController.inicializar(
-                txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades,
-                txtBuscarLivro, cbDisciplina, cbStatus, tabelaLivros,
-                colLivroId, colTitulo, colAutor, colStatus, colCategoria, colDisciplina, colUnidades,
-                btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro,
-                txtCitacao, txtBibliografia
-        );
-
-
-        // Inicializar EmprestimoController
+        livroController = new LivroController();
         emprestimoController = new EmprestimoController();
-        emprestimoController.inicializar(
-                txtRFIDLeitura, txtCodigoLivro,
-                lblNomeEstudante, lblCursoEstudante, lblCodigoEstudante,
-                lblQtdEmprestimos, lblMultaPendente,
-                lblTituloLivro, lblAutoresLivro, lblUnidadesDisponiveis, lblCategoriaLivro, lblDisciplinaLivro,
-                tabelaEmprestimosAtivos, colEmprestimoId, colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo, colMultaEmprestimo
-        );
-
-        // Inicializar RelatorioController
         relatorioController = new RelatorioController();
-        relatorioController.inicializar(
-                cbTipoRelatorio, dpDataInicio, dpDataFim, cbStatusEmprestimoRelatorio, cbCursoRelatorio,
-                lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso,
-                lblTotalRegistros, txtBuscarTabela, tabelaResultados, col1, col2, col3, col4, col5
-        );
+
+        // Depois inicializar cada um
+        try {
+            estudanteController.inicializar(
+                    txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino,
+                    txtBuscarEstudante, tabelaEstudantes, colId, colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID,
+                    btnSalvar, btnAtualizar, btnDeletar, btnLimpar
+            );
+            System.out.println("EstudanteController inicializado com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar EstudanteController: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        try {
+            livroController.inicializar(
+                    txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades,
+                    txtBuscarLivro, cbDisciplina, cbStatus, tabelaLivros,
+                    colLivroId, colTitulo, colAutor, colStatus, colCategoria, colDisciplina, colUnidades,
+                    btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro,
+                    txtCitacao, txtBibliografia
+            );
+            System.out.println("LivroController inicializado com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar LivroController: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        try {
+            emprestimoController.inicializar(
+                    txtRFIDLeitura, txtCodigoLivro,
+                    lblNomeEstudante, lblCursoEstudante, lblCodigoEstudante,
+                    lblQtdEmprestimos, lblMultaPendente,
+                    lblTituloLivro, lblAutoresLivro, lblUnidadesDisponiveis, lblCategoriaLivro, lblDisciplinaLivro,
+                    tabelaEmprestimosAtivos, colEmprestimoId, colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo, colMultaEmprestimo
+            );
+            System.out.println("EmprestimoController inicializado com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar EmprestimoController: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        try {
+            relatorioController.inicializar(
+                    cbTipoRelatorio, dpDataInicio, dpDataFim, cbStatusEmprestimoRelatorio, cbCurso,
+                    lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso,
+                    lblTotalRegistros, txtBuscarTabela, tabelaResultados, col1, col2, col3, col4, col5
+            );
+            System.out.println("RelatorioController inicializado com sucesso!");
+        } catch (Exception e) {
+            System.err.println("Erro ao inicializar RelatorioController: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // ==================== MÉTODOS DE NAVEGAÇÃO ====================
@@ -361,7 +385,7 @@ public class DashBoardController implements Initializable {
     }
 
     @FXML
-    public void salvarrEstudante() {
+    public void salvarEstudante() {
         if (!validarCampos()) return;
 
         try {

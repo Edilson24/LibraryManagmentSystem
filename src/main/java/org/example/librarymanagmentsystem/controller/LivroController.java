@@ -23,7 +23,7 @@ public class LivroController {
     private Livro livroSelecionado;
 
     private TextField txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades;
-    private TextField txtBuscar;
+    private TextField txtBuscarLivro;
     private ComboBox<Disciplina> cbDisciplina;
     private ComboBox<String> cbStatus;
     private TableView<Livro> tabelaLivros;
@@ -65,7 +65,7 @@ public class LivroController {
         this.txtAnoPublicacao = txtAnoPublicacao;
         this.txtCategoria = txtCategoria;
         this.txtUnidades = txtUnidades;
-        this.txtBuscar = txtBuscar;
+        this.txtBuscarLivro = txtBuscar;
         this.cbDisciplina = (ComboBox<Disciplina>) cbDisciplina;
         this.cbStatus = (ComboBox<String>) cbStatus;
         this.tabelaLivros = (TableView<Livro>) tabelaLivros;
@@ -140,18 +140,47 @@ public class LivroController {
     }
 
     private void configurarEventos() {
-        txtBuscar.textProperty().addListener((obs, old, novo) -> {
-            if (novo.isEmpty()) {
-                carregarDados();
-            } else {
-                buscarLivros();
-            }
-        });
+        // Verificação segura para txtBuscarLivro
+        if (txtBuscarLivro != null) {
+            txtBuscarLivro.textProperty().addListener((obs, old, novo) -> {
+                if (novo.isEmpty()) {
+                    carregarDados();
+                } else {
+                    buscarLivros();
+                }
+            });
+            System.out.println("✅ txtBuscarLivro configurado com sucesso!");
+        } else {
+            System.err.println("⚠️ ATENÇÃO: txtBuscarLivro é NULL! Verifique o fx:id no FXML.");
+        }
 
-        btnSalvar.setOnAction(e -> salvarLivro());
-        btnAtualizar.setOnAction(e -> atualizarLivro());
-        btnDeletar.setOnAction(e -> deletarLivro());
-        btnLimpar.setOnAction(e -> limparCampos());
+        if (btnSalvar != null) {
+            btnSalvar.setOnAction(e -> salvarLivro());
+            System.out.println("✅ btnSalvar configurado");
+        } else {
+            System.err.println("⚠️ btnSalvar é NULL");
+        }
+
+        if (btnAtualizar != null) {
+            btnAtualizar.setOnAction(e -> atualizarLivro());
+            System.out.println("✅ btnAtualizar configurado");
+        } else {
+            System.err.println("⚠️ btnAtualizar é NULL");
+        }
+
+        if (btnDeletar != null) {
+            btnDeletar.setOnAction(e -> deletarLivro());
+            System.out.println("✅ btnDeletar configurado");
+        } else {
+            System.err.println("⚠️ btnDeletar é NULL");
+        }
+
+        if (btnLimpar != null) {
+            btnLimpar.setOnAction(e -> limparCampos());
+            System.out.println("✅ btnLimpar configurado");
+        } else {
+            System.err.println("⚠️ btnLimpar é NULL");
+        }
     }
 
     public void carregarDados() {
@@ -249,7 +278,7 @@ public class LivroController {
     }
 
     void buscarLivros() {
-        String busca = txtBuscar.getText().trim();
+        String busca = txtBuscarLivro.getText().trim();
         if (busca.isEmpty()) {
             carregarDados();
             return;

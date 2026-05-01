@@ -85,36 +85,84 @@ public class RelatorioController {
     }
 
     private void configurarEventos() {
-        cbTipoRelatorio.setOnAction(e -> carregarRelatorio());
-        dpDataInicio.setOnAction(e -> carregarRelatorio());
-        dpDataFim.setOnAction(e -> carregarRelatorio());
-        cbStatusEmprestimo.setOnAction(e -> carregarRelatorio());
-        cbCurso.setOnAction(e -> carregarRelatorio());
+        // Verificações de null para evitar erro
+        if (cbTipoRelatorio != null) {
+            cbTipoRelatorio.setOnAction(e -> carregarRelatorio());
+            System.out.println("✅ cbTipoRelatorio configurado");
+        } else {
+            System.err.println("⚠️ ATENÇÃO: cbTipoRelatorio é NULL! Verifique o fx:id no FXML.");
+        }
 
-        txtBuscarTabela.textProperty().addListener((obs, old, novo) -> filtrarTabela());
+        if (dpDataInicio != null) {
+            dpDataInicio.setOnAction(e -> carregarRelatorio());
+            System.out.println("✅ dpDataInicio configurado");
+        } else {
+            System.err.println("⚠️ dpDataInicio é NULL");
+        }
+
+        if (dpDataFim != null) {
+            dpDataFim.setOnAction(e -> carregarRelatorio());
+            System.out.println("✅ dpDataFim configurado");
+        } else {
+            System.err.println("⚠️ dpDataFim é NULL");
+        }
+
+        if (cbStatusEmprestimo != null) {
+            cbStatusEmprestimo.setOnAction(e -> carregarRelatorio());
+            System.out.println("✅ cbStatusEmprestimo configurado");
+        } else {
+            System.err.println("⚠️ ATENÇÃO: cbStatusEmprestimo é NULL! Verifique o fx:id no FXML.");
+        }
+
+        if (cbCurso != null) {
+            cbCurso.setOnAction(e -> carregarRelatorio());
+            System.out.println("✅ cbCurso configurado");
+        } else {
+            System.err.println("⚠️ cbCurso é NULL");
+        }
+
+        if (txtBuscarTabela != null) {
+            txtBuscarTabela.textProperty().addListener((obs, old, novo) -> filtrarTabela());
+            System.out.println("✅ txtBuscarTabela configurado");
+        } else {
+            System.err.println("⚠️ txtBuscarTabela é NULL");
+        }
     }
 
     public void carregarDados() {
-        cbTipoRelatorio.setItems(FXCollections.observableArrayList(
-                "📚 Livros",
-                "👨‍🎓 Estudantes",
-                "🔄 Empréstimos",
-                "💰 Multas",
-                "📈 Estatísticas"
-        ));
-        cbStatusEmprestimo.setItems(FXCollections.observableArrayList("Todos", "Ativos", "Finalizados"));
+        if (cbTipoRelatorio != null) {
+            cbTipoRelatorio.setItems(FXCollections.observableArrayList(
+                    "📚 Livros", "👨‍🎓 Estudantes", "🔄 Empréstimos", "💰 Multas", "📈 Estatísticas"
+            ));
+            cbTipoRelatorio.setValue("📚 Livros");
+        } else {
+            System.err.println("⚠️ cbTipoRelatorio é NULL");
+        }
 
-        cbTipoRelatorio.setValue("📚 Livros");
+        if (cbStatusEmprestimo != null) {
+            cbStatusEmprestimo.setItems(FXCollections.observableArrayList("Todos", "Ativos", "Finalizados"));
+            System.out.println("✅ cbStatusEmprestimo configurado");
+        } else {
+            System.err.println("⚠️ ATENÇÃO: cbStatusEmprestimo é NULL! Verifique o fx:id no FXML.");
+        }
+
+        if (cbCurso != null) {
+            cbCurso.setItems(FXCollections.observableArrayList("Todos", "Computação", "Engenharia", "Administração", "Direito"));
+            cbCurso.setValue("Todos");
+            System.out.println("✅ cbCurso configurado");
+        } else {
+            System.err.println("⚠️ ATENÇÃO: cbCurso é NULL! Verifique o fx:id no FXML.");
+        }
 
         // Esconder filtros inicialmente
-        lblFiltroDataInicio.setVisible(false);
-        lblFiltroDataFim.setVisible(false);
-        lblStatus.setVisible(false);
-        lblCurso.setVisible(false);
-        dpDataInicio.setVisible(false);
-        dpDataFim.setVisible(false);
-        cbStatusEmprestimo.setVisible(false);
-        cbCurso.setVisible(false);
+        if (lblFiltroDataInicio != null) lblFiltroDataInicio.setVisible(false);
+        if (lblFiltroDataFim != null) lblFiltroDataFim.setVisible(false);
+        if (lblStatus != null) lblStatus.setVisible(false);
+        if (lblCurso != null) lblCurso.setVisible(false);
+        if (dpDataInicio != null) dpDataInicio.setVisible(false);
+        if (dpDataFim != null) dpDataFim.setVisible(false);
+        if (cbStatusEmprestimo != null) cbStatusEmprestimo.setVisible(false);
+        if (cbCurso != null) cbCurso.setVisible(false);
     }
 
     private void carregarRelatorio() {
