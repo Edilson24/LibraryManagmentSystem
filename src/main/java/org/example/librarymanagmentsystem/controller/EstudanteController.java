@@ -3,45 +3,79 @@ package org.example.librarymanagmentsystem.controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import org.example.librarymanagmentsystem.daos.EstudanteDAO;
 import org.example.librarymanagmentsystem.entidades.Estudante;
 
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.ResourceBundle;
 
-public class EstudanteController implements Initializable {
-
-    @FXML private TextField txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
-    @FXML private TextField txtBuscar;
-    @FXML private TableView<Estudante> tabelaEstudantes;
-    @FXML private TableColumn<Estudante, Integer> colId;
-    @FXML private TableColumn<Estudante, String> colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID;
-    @FXML private Button btnSalvar, btnAtualizar, btnDeletar, btnLimpar;
+public class EstudanteController {
 
     private EstudanteDAO estudanteDAO;
     private ObservableList<Estudante> estudantesList;
     private Estudante estudanteSelecionado;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    // Componentes da interface
+    private TextField txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
+    private TextField txtBuscar;
+    private TableView<Estudante> tabelaEstudantes;
+    private TableColumn<Estudante, Integer> colId;
+    private TableColumn<Estudante, String> colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID;
+    private Button btnSalvar, btnAtualizar, btnDeletar, btnLimpar;
+
+    @SuppressWarnings("unchecked")
+    public void inicializar(
+            TextField txtNome,
+            TextField txtCurso,
+            TextField txtDepartamento,
+            TextField txtIdade,
+            TextField txtCodigoEstudante,
+            TextField txtCartaoArduino,
+            TextField txtBuscar,
+            TableView<?> tabelaEstudantes,
+            TableColumn<?, ?> colId,
+            TableColumn<?, ?> colNome,
+            TableColumn<?, ?> colCurso,
+            TableColumn<?, ?> colDepartamento,
+            TableColumn<?, ?> colCodigo,
+            TableColumn<?, ?> colCartaoRFID,
+            Button btnSalvar,
+            Button btnAtualizar,
+            Button btnDeletar,
+            Button btnLimpar) {
+
+        this.txtNome = txtNome;
+        this.txtCurso = txtCurso;
+        this.txtDepartamento = txtDepartamento;
+        this.txtIdade = txtIdade;
+        this.txtCodigoEstudante = txtCodigoEstudante;
+        this.txtCartaoArduino = txtCartaoArduino;
+        this.txtBuscar = txtBuscar;
+        this.tabelaEstudantes = (TableView<Estudante>) tabelaEstudantes;
+        this.colId = (TableColumn<Estudante, Integer>) colId;
+        this.colNome = (TableColumn<Estudante, String>) colNome;
+        this.colCurso = (TableColumn<Estudante, String>) colCurso;
+        this.colDepartamento = (TableColumn<Estudante, String>) colDepartamento;
+        this.colCodigo = (TableColumn<Estudante, String>) colCodigo;
+        this.colCartaoRFID = (TableColumn<Estudante, String>) colCartaoRFID;
+        this.btnSalvar = btnSalvar;
+        this.btnAtualizar = btnAtualizar;
+        this.btnDeletar = btnDeletar;
+        this.btnLimpar = btnLimpar;
+
         estudanteDAO = new EstudanteDAO();
         estudantesList = FXCollections.observableArrayList();
 
         configurarTabela();
+        configurarEventos();
         carregarDados();
-        configurarListeners();
     }
 
     private void configurarTabela() {
-        colId.setCellValueFactory(new PropertyValueFactory<>("idEstudante"));
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colNome.setCellValueFactory(new PropertyValueFactory<>("nome"));
         colCurso.setCellValueFactory(new PropertyValueFactory<>("curso"));
         colDepartamento.setCellValueFactory(new PropertyValueFactory<>("departamento"));
@@ -50,7 +84,6 @@ public class EstudanteController implements Initializable {
 
         tabelaEstudantes.setItems(estudantesList);
 
-        // Selecionar linha da tabela
         tabelaEstudantes.getSelectionModel().selectedItemProperty().addListener((obs, old, novo) -> {
             if (novo != null) {
                 estudanteSelecionado = novo;
@@ -59,8 +92,7 @@ public class EstudanteController implements Initializable {
         });
     }
 
-    private void configurarListeners() {
-        // Busca em tempo real
+    private void configurarEventos() {
         txtBuscar.textProperty().addListener((obs, old, novo) -> {
             if (novo.isEmpty()) {
                 carregarDados();
@@ -68,6 +100,11 @@ public class EstudanteController implements Initializable {
                 buscarEstudantes();
             }
         });
+
+        btnSalvar.setOnAction(e -> salvarEstudante());
+        btnAtualizar.setOnAction(e -> atualizarEstudante());
+        btnDeletar.setOnAction(e -> deletarEstudante());
+        btnLimpar.setOnAction(e -> limparCampos());
     }
 
     public void carregarDados() {
@@ -80,29 +117,28 @@ public class EstudanteController implements Initializable {
                 });
             } catch (SQLException e) {
                 e.printStackTrace();
-                Platform.runLater(() -> mostrarErro("Erro ao carregar estudantes: " + e.getMessage()));
+                Platform.runLater(() -> mostrarErro("Erro ao carregar: " + e.getMessage()));
             }
         }).start();
     }
 
-    @FXML
     private void salvarEstudante() {
         if (!validarCampos()) return;
 
         try {
-            Estudante estudante = new Estudante();
-            estudante.setNome(txtNome.getText().trim());
-            estudante.setCurso(txtCurso.getText().trim());
-            estudante.setDepartamento(txtDepartamento.getText().trim());
-            estudante.setIdade(Integer.parseInt(txtIdade.getText()));
-            estudante.setCodigoEstudante(txtCodigoEstudante.getText().trim());
-            estudante.setIdCartaoArduino(txtCartaoArduino.getText().trim());
+            Estudante estudante = new Estudante(
+                    txtNome.getText().trim(),
+                    Integer.parseInt(txtIdade.getText()),
+                    txtDepartamento.getText().trim(),
+                    txtCurso.getText().trim(),
+                    txtCartaoArduino.getText().trim(),
+                    txtCodigoEstudante.getText().trim()
+            );
 
             estudanteDAO.inserir(estudante);
             mostrarSucesso("Estudante cadastrado com sucesso!");
             limparCampos();
             carregarDados();
-
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicate entry")) {
                 mostrarErro("Código de estudante ou cartão RFID já existe!");
@@ -114,10 +150,9 @@ public class EstudanteController implements Initializable {
         }
     }
 
-    @FXML
     private void atualizarEstudante() {
         if (estudanteSelecionado == null) {
-            mostrarAviso("Selecione um estudante na tabela para atualizar!");
+            mostrarAviso("Selecione um estudante na tabela!");
             return;
         }
 
@@ -135,7 +170,6 @@ public class EstudanteController implements Initializable {
             mostrarSucesso("Estudante atualizado com sucesso!");
             limparCampos();
             carregarDados();
-
         } catch (SQLException e) {
             mostrarErro("Erro ao atualizar: " + e.getMessage());
         } catch (NumberFormatException e) {
@@ -143,18 +177,16 @@ public class EstudanteController implements Initializable {
         }
     }
 
-    @FXML
     private void deletarEstudante() {
         if (estudanteSelecionado == null) {
-            mostrarAviso("Selecione um estudante na tabela para deletar!");
+            mostrarAviso("Selecione um estudante na tabela!");
             return;
         }
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmar exclusão");
         alert.setHeaderText(null);
-        alert.setContentText("Tem certeza que deseja deletar o estudante " +
-                estudanteSelecionado.getNome() + "?");
+        alert.setContentText("Tem certeza que deseja deletar " + estudanteSelecionado.getNome() + "?");
 
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -169,33 +201,25 @@ public class EstudanteController implements Initializable {
         }
     }
 
-    @FXML
-    private void limparCampos() {
-        txtNome.clear();
-        txtCurso.clear();
-        txtDepartamento.clear();
-        txtIdade.clear();
-        txtCodigoEstudante.clear();
-        txtCartaoArduino.clear();
-        estudanteSelecionado = null;
-        tabelaEstudantes.getSelectionModel().clearSelection();
-    }
-
-    @FXML
     private void buscarEstudantes() {
-        /*String busca = txtBuscar.getText().trim();
+        String busca = txtBuscar.getText().trim();
         if (busca.isEmpty()) {
             carregarDados();
             return;
         }
 
         new Thread(() -> {
-            List<Estudante> resultados = estudanteDAO.buscarPorNome(busca);
-            Platform.runLater(() -> {
-                estudantesList.clear();
-                estudantesList.addAll(resultados);
-            });
-        }).start();*/
+            try {
+                List<Estudante> resultados = estudanteDAO.buscarPorNome(busca);
+                Platform.runLater(() -> {
+                    estudantesList.clear();
+                    estudantesList.addAll(resultados);
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> mostrarErro("Erro na busca: " + e.getMessage()));
+            }
+        }).start();
     }
 
     private void preencherCampos(Estudante e) {
@@ -205,6 +229,17 @@ public class EstudanteController implements Initializable {
         txtIdade.setText(String.valueOf(e.getIdade()));
         txtCodigoEstudante.setText(e.getCodigoEstudante());
         txtCartaoArduino.setText(e.getIdCartaoArduino());
+    }
+
+    public void limparCampos() {
+        txtNome.clear();
+        txtCurso.clear();
+        txtDepartamento.clear();
+        txtIdade.clear();
+        txtCodigoEstudante.clear();
+        txtCartaoArduino.clear();
+        estudanteSelecionado = null;
+        tabelaEstudantes.getSelectionModel().clearSelection();
     }
 
     private boolean validarCampos() {

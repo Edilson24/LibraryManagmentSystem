@@ -80,24 +80,7 @@ public class LivroDAO {
         return null;
     }
 
-    // READ - Buscar por título (busca parcial)
-    public List<Livro> buscarPorTitulo(String titulo) throws SQLException {
-        List<Livro> livros = new ArrayList<>();
-        String sql = "SELECT * FROM livros WHERE titulo LIKE ? ORDER BY titulo";
 
-        try (Connection conn = Conexao.obterConexao();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, "%" + titulo + "%");
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    livros.add(mapearLivro(rs));
-                }
-            }
-        }
-        return livros;
-    }
 
     // READ - Listar todos
     public List<Livro> listarTodos() throws SQLException {
@@ -258,27 +241,6 @@ public class LivroDAO {
         return false;
     }
 
-    // Mapeamento básico
-    private Livro mapearLivro(ResultSet rs) throws SQLException {
-        Livro livro = new Livro();
-        livro.setIdLivro(rs.getInt("id_livro"));
-        livro.setTitulo(rs.getString("titulo"));
-        livro.setAutor(rs.getString("autor"));
-        livro.setAnoPublicacao(rs.getInt("ano_publicacao"));
-        livro.setIsbn(rs.getString("isbn"));
-        livro.setStatus(rs.getString("status"));
-        livro.setCategoria(rs.getString("categoria"));
-        livro.setUnidades(rs.getInt("unidades"));
-
-        // Buscar disciplina se existir
-        int fkDisciplina = rs.getInt("fk_disciplina");
-        if (!rs.wasNull() && fkDisciplina > 0) {
-            Disciplina disciplina = disciplinaDAO.buscarPorId(fkDisciplina);
-            livro.setDisciplina(disciplina);
-        }
-
-        return livro;
-    }
 
     // Mapeamento completo com nome da disciplina
     private Livro mapearLivroCompleto(ResultSet rs) throws SQLException {
@@ -315,5 +277,50 @@ public class LivroDAO {
 
             return rs.next() ? rs.getInt("total") : 0;
         }
+    }
+
+    public List<Livro> buscarPorTitulo(String titulo) throws SQLException {
+        List<Livro> livros = new ArrayList<>();
+        String sql = "SELECT l.*, d.nome_disciplina FROM livros l " +
+                "LEFT JOIN disciplinas d ON l.fk_disciplina = d.id_disciplina " +
+                "WHERE l.titulo LIKE ? ORDER BY l.titulo";
+
+        try (Connection conn = Conexao.obterConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + titulo + "%");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    livros.add(mapearLivroCompleto(rs));
+                }
+            }
+        }
+        return livros;
+    }
+
+    /**
+     * Mapeamento básico do ResultSet para objeto Livro
+     */
+    private Livro mapearLivro(ResultSet rs) throws SQLException {
+        Livro livro = new Livro();
+        livro.setIdLivro(rs.getInt("id_livro"));
+        livro.setTitulo(rs.getString("titulo"));
+        livro.setAutor(rs.getString("autor"));
+        livro.setAnoPublicacao(rs.getInt("ano_publicacao"));
+        livro.setIsbn(rs.getString("isbn"));
+        livro.setStatus(rs.getString("status"));
+        livro.setCategoria(rs.getString("categoria"));
+        livro.setUnidades(rs.getInt("unidades"));
+
+        // Buscar disciplina se existir
+        int fkDisciplina = rs.getInt("fk_disciplina");
+        if (!rs.wasNull() && fkDisciplina > 0) {
+            DisciplinaDAO disciplinaDAO = new DisciplinaDAO();
+            Disciplina disciplina = disciplinaDAO.buscarPorId(fkDisciplina);
+            livro.setDisciplina(disciplina);
+        }
+
+        return livro;
     }
 }

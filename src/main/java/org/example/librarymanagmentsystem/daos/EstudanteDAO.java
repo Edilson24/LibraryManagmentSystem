@@ -26,16 +26,33 @@ public class EstudanteDAO {
 
             stmt.executeUpdate();
 
-            // Recupera o ID gerado
-            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    estudante.setId(generatedKeys.getInt(1));
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    estudante.setId(rs.getInt(1));
                 }
             }
         }
     }
 
-    // READ - Buscar por ID do cartão Arduino (para leitor RFID)
+    // READ - Buscar por ID
+    public Estudante buscarPorId(int id) throws SQLException {
+        String sql = "SELECT * FROM estudantes WHERE id_estudante = ?";
+
+        try (Connection conn = Conexao.obterConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapearEstudante(rs);
+                }
+            }
+        }
+        return null;
+    }
+
+    // READ - Buscar por cartão Arduino (RFID)
     public Estudante buscarPorCartaoArduino(String idCartao) throws SQLException {
         String sql = "SELECT * FROM estudantes WHERE id_cartao_arduino = ?";
 
@@ -71,8 +88,81 @@ public class EstudanteDAO {
         return null;
     }
 
+    // READ - Buscar por nome (contém) - MÉTODO QUE FALTAVA!
+    public List<Estudante> buscarPorNome(String nome) throws SQLException {
+        List<Estudante> estudantes = new ArrayList<>();
+        String sql = "SELECT * FROM estudantes WHERE nome LIKE ? ORDER BY nome";
+
+        try (Connection conn = Conexao.obterConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + nome + "%");
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    estudantes.add(mapearEstudante(rs));
+                }
+            }
+        }
+        return estudantes;
+    }
+
+    // READ - Buscar por curso
+    public List<Estudante> buscarPorCurso(String curso) throws SQLException {
+        List<Estudante> estudantes = new ArrayList<>();
+        String sql = "SELECT * FROM estudantes WHERE curso = ? ORDER BY nome";
+
+        try (Connection conn = Conexao.obterConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, curso);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    estudantes.add(mapearEstudante(rs));
+                }
+            }
+        }
+        return estudantes;
+    }
+
+    // READ - Buscar por departamento
+    public List<Estudante> buscarPorDepartamento(String departamento) throws SQLException {
+        List<Estudante> estudantes = new ArrayList<>();
+        String sql = "SELECT * FROM estudantes WHERE departamento = ? ORDER BY nome";
+
+        try (Connection conn = Conexao.obterConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, departamento);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    estudantes.add(mapearEstudante(rs));
+                }
+            }
+        }
+        return estudantes;
+    }
+
     // READ - Listar todos
     public List<Estudante> listarTodos() throws SQLException {
+        List<Estudante> estudantes = new ArrayList<>();
+        String sql = "SELECT * FROM estudantes ORDER BY nome";
+
+        try (Connection conn = Conexao.obterConexao();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                estudantes.add(mapearEstudante(rs));
+            }
+        }
+        return estudantes;
+    }
+
+    // READ - Listar ativos (se tiver campo ativo)
+    public List<Estudante> listarAtivos() throws SQLException {
         List<Estudante> estudantes = new ArrayList<>();
         String sql = "SELECT * FROM estudantes ORDER BY nome";
 
@@ -107,8 +197,13 @@ public class EstudanteDAO {
         }
     }
 
-    // DELETE (soft delete ou hard delete?)
+    // DELETE
     public void deletar(int id) throws SQLException {
+        // Verificar se o estudante tem empréstimos ativos
+        if (temEmprestimosAtivos(id)) {
+            throw new SQLException("Não é possível deletar estudante com empréstimos ativos!");
+        }
+
         String sql = "DELETE FROM estudantes WHERE id_estudante = ?";
 
         try (Connection conn = Conexao.obterConexao();
@@ -119,26 +214,89 @@ public class EstudanteDAO {
         }
     }
 
-    // Método auxiliar para mapear ResultSet para objeto Estudante
+    // Verificar se estudante tem empréstimos ativos
+    private boolean temEmprestimosAtivos(int idEstudante) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM emprestimos WHERE fk_estudante = ? AND data_devolucao_real IS NULL";
+
+        try (Connection conn = Conexao.obterConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, idEstudante);
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
+    }
+
+    // Contar total de estudantes
+    public int contarTotal() throws SQLException {
+        String sql = "SELECT COUNT(*) as total FROM estudantes";
+
+        try (Connection conn = Conexao.obterConexao();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            return rs.next() ? rs.getInt("total") : 0;
+        }
+    }
+
+    // Buscar por múltiplos critérios (busca avançada)
+    public List<Estudante> buscarAvancada(String nome, String curso, String departamento) throws SQLException {
+        List<Estudante> estudantes = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM estudantes WHERE 1=1");
+        List<Object> params = new ArrayList<>();
+
+        if (nome != null && !nome.isEmpty()) {
+            sql.append(" AND nome LIKE ?");
+            params.add("%" + nome + "%");
+        }
+        if (curso != null && !curso.isEmpty()) {
+            sql.append(" AND curso = ?");
+            params.add(curso);
+        }
+        if (departamento != null && !departamento.isEmpty()) {
+            sql.append(" AND departamento = ?");
+            params.add(departamento);
+        }
+
+        sql.append(" ORDER BY nome");
+
+        try (Connection conn = Conexao.obterConexao();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    estudantes.add(mapearEstudante(rs));
+                }
+            }
+        }
+        return estudantes;
+    }
+
+    // Mapear ResultSet para objeto Estudante
     private Estudante mapearEstudante(ResultSet rs) throws SQLException {
-        Estudante estudante = new Estudante(
-                rs.getInt("id_estudante"),
-                rs.getString("nome"),
-                rs.getInt("idade"),
-                rs.getString("departamento"),
-                rs.getString("curso"),
-                rs.getString("id_cartao_arduino"),
-                rs.getString("codigo_estudante")
-        );
-        estudante.setDataCadastro(rs.getTimestamp("data_cadastro").toLocalDateTime().toLocalDate());
+        Estudante estudante = new Estudante();
+        estudante.setId(rs.getInt("id_estudante"));
+        estudante.setNome(rs.getString("nome"));
+        estudante.setCurso(rs.getString("curso"));
+        estudante.setIdCartaoArduino(rs.getString("id_cartao_arduino"));
+        estudante.setIdade(rs.getInt("idade"));
+        estudante.setDepartamento(rs.getString("departamento"));
+        estudante.setCodigoEstudante(rs.getString("codigo_estudante"));
+
+        Timestamp timestamp = rs.getTimestamp("data_cadastro");
+        if (timestamp != null) {
+            estudante.setDataCadastro(timestamp.toLocalDateTime().toLocalDate());
+        }
+
         return estudante;
     }
-
-    public Estudante buscarPorId(int idEstudante) {
-        return buscarPorId(idEstudante);
-    }
-
-    //public List<Estudante> buscarPorNome(String busca) {
-    //  return busca;
-    //}
 }

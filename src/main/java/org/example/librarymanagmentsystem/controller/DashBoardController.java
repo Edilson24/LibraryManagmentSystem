@@ -1,387 +1,298 @@
 package org.example.librarymanagmentsystem.controller;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.control.Label;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
-
-import java.net.URL;
-import java.sql.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
-import javafx.util.Duration;
+import javafx.scene.layout.AnchorPane;
 import org.example.librarymanagmentsystem.services.DashboardService;
 
 import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ResourceBundle;
 
 public class DashBoardController implements Initializable {
 
+    // ==================== COMPONENTES DO DASHBOARD ====================
     @FXML private Label lblTotalEstudantes;
     @FXML private Label lblLivrosDisponiveis;
     @FXML private Label lblEmprestimosAtivos;
     @FXML private Label lblMultasPendentes;
     @FXML private ListView<String> listaUltimosEmprestimos;
     @FXML private ListView<String> listaTopLivros;
-    @FXML private CategoryAxis xAxis;
-    @FXML private NumberAxis yAxis;
+    @FXML private BarChart<String, Number> graficoEmprestimos;
 
+    // ==================== TELAS PRINCIPAIS (AnchorPanes) ====================
+    @FXML private AnchorPane dashboard_form;
+    @FXML private AnchorPane telaEstudante_form;
+    @FXML private AnchorPane livros_form;
+    @FXML private AnchorPane emprestimos_form;
+    @FXML private AnchorPane relatorio_form;
+
+    // ==================== BOTÕES DO MENU ====================
+    @FXML private Label dasboard_btn;
+    @FXML private Label estudantes_btn;
+    @FXML private Label livros_btn;
+    @FXML private Label emprestimos_btn;
+    @FXML private Label relatorio_btn;
+
+    // ==================== COMPONENTES DA TELA ESTUDANTES ====================
+    @FXML private TextField txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
+    @FXML private TextField txtBuscarEstudante;
+    @FXML private TableView<?> tabelaEstudantes;
+    @FXML private TableColumn<?, ?> colId, colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID;
+    @FXML private Button btnSalvarEstudante, btnAtualizarEstudante, btnDeletarEstudante, btnLimparEstudante;
+
+    // ==================== COMPONENTES DA TELA LIVROS ====================
+    @FXML private TextField txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades;
+    @FXML private TextField txtBuscarLivro;
+    @FXML private ComboBox<?> cbDisciplina, cbStatus;
+    @FXML private TableView<?> tabelaLivros;
+    @FXML private TableColumn<?, ?> colLivroId, colTitulo, colAutor, colStatus, colCategoria, colDisciplina, colUnidades;
+    @FXML private Button btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro;
+    @FXML private TextArea txtCitacao, txtBibliografia;
+
+    // ==================== COMPONENTES DA TELA EMPRÉSTIMOS ====================
+    @FXML private TextField txtRFIDLeitura, txtCodigoLivro;
+    @FXML private Label lblNomeEstudante, lblCursoEstudante, lblCodigoEstudante;
+    @FXML private Label lblQtdEmprestimos, lblMultaPendente;
+    @FXML private Label lblTituloLivro, lblAutoresLivro, lblUnidadesDisponiveis, lblCategoriaLivro, lblDisciplinaLivro;
+    @FXML private TableView<?> tabelaEmprestimosAtivos;
+    @FXML private TableColumn<?, ?> colEmprestimoId, colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo, colMultaEmprestimo;
+
+    // ==================== COMPONENTES DA TELA RELATÓRIOS ====================
+    @FXML private ComboBox<String> cbTipoRelatorio;
+    @FXML private DatePicker dpDataInicio, dpDataFim;
+    @FXML private ComboBox<String> cbStatusEmprestimo, cbCurso;
+    @FXML private Label lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso;
+    @FXML private Label lblTotalRegistros;
+    @FXML private TextField txtBuscarTabela;
+    @FXML private TableView<?> tabelaResultados;
+    @FXML private TableColumn<?, ?> col1, col2, col3, col4, col5;
+
+    // ==================== CONTROLLERS SECUNDÁRIOS ====================
+    private EstudanteController estudanteController;
+    private LivroController livroController;
+    private EmprestimoController emprestimoController;
+    private RelatorioController relatorioController;
 
     private DashboardService dashboardService;
     private ObservableList<String> ultimosEmprestimosList;
     private ObservableList<String> topLivrosList;
 
-    @FXML
-    private Label dasboard_btn;
-
-    @FXML
-    private AnchorPane dashboard_form;
-
-    @FXML
-    private Label estudante_form;
-
-    @FXML
-    private Label estudantes_btn;
-
-    @FXML
-    private Label livros_btn;
-    
-    @FXML
-    private Label emprestimos_btn;
-
-    @FXML
-    private AnchorPane livros_form;
-
-    @FXML
-    private Label relatorio_btn;
-
-    @FXML
-    private AnchorPane relatorio_form;
-    
-    @FXML
-    private AnchorPane emprestimos_form;
-
-    @FXML
-    private AnchorPane telaEstudante_form;
-
-    public void mudarTela(MouseEvent event) {
-        dashboardService = new DashboardService();
-        ultimosEmprestimosList = FXCollections.observableArrayList();
-        topLivrosList = FXCollections.observableArrayList();
-
-        // Configurar ListViews
-        listaUltimosEmprestimos.setItems(ultimosEmprestimosList);
-        listaTopLivros.setItems(topLivrosList);
-
-        // Verificação de segurança
-        if (!(event.getSource() instanceof Label)) {
-            System.out.println("Event source não é um Label: " + event.getSource());
-            return;
-        }
-
-        Label btnClicado = (Label) event.getSource();
-
-        // Mapa completo com TODOS os botões e telas
-        Map<Label, AnchorPane> telaMap = new HashMap<>();
-        telaMap.put(dasboard_btn, dashboard_form);
-        telaMap.put(estudantes_btn, telaEstudante_form);
-        telaMap.put(livros_btn, livros_form);
-        telaMap.put(relatorio_btn, relatorio_form);
-        telaMap.put(emprestimos_btn, emprestimos_form);  // ← ADICIONADO
-
-        // Array com TODOS os botões do menu
-        Label[] todosBotoes = {dasboard_btn, estudantes_btn, livros_btn, relatorio_btn, emprestimos_btn};  // ← ADICIONADO
-
-        // Esconder todas as telas
-        for (AnchorPane tela : telaMap.values()) {
-            if (tela != null) {
-                tela.setVisible(false);
-            }
-        }
-
-        // Resetar estilo de todos os botões
-        for (Label botao : todosBotoes) {
-            if (botao != null) {
-                botao.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
-            }
-        }
-
-        // Mostrar tela selecionada e estilizar botão
-        AnchorPane telaSelecionada = telaMap.get(btnClicado);
-        if (telaSelecionada != null) {
-            telaSelecionada.setVisible(true);
-            btnClicado.setStyle("-fx-background-color: #ffffff33; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-radius: 5px;");
-        }
-
-        // Carregar todos os dados
-        carregarDadosDashboard();
-    }
-
-    private void carregarDadosDashboard() {
-        carregarCardsDashboard();
-        carregarUltimosEmprestimos();
-        carregarTopLivros();
-
-    }
-
-    private void carregarTopLivros() {
-        try (ResultSet rs = dashboardService.getTopLivros()) {
-            topLivrosList.clear();
-            int rank = 1;
-
-            while (rs.next()) {
-                String titulo = rs.getString("titulo");
-                int total = rs.getInt("total_emprestimos");
-
-                String medalha = rank == 1 ? "🥇" : (rank == 2 ? "🥈" : (rank == 3 ? "🥉" : "📚"));
-                String item = String.format("%s %dº | %s | %d empréstimos", medalha, rank, titulo, total);
-
-                topLivrosList.add(item);
-                rank++;
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            topLivrosList.add("Erro ao carregar top livros");
-        }
-    }
-
-    private void limparCamposEmprestimo() {
-    }
-
-    private void carregarRelatorios() {
-    }
-
-    private void carregarListaLivros() {
-    }
-
-    private void carregarListaEstudantes() {
-    }
-
-
-    public void salvarEstudante(ActionEvent actionEvent) {
-    }
-
-    public void buscarEstudantes(KeyEvent keyEvent) {
-    }
-
-    public void atualizarEstudante(ActionEvent actionEvent) {
-    }
-
-    public void deletarEstudante(ActionEvent actionEvent) {
-    }
-
-    public void limparCampos(ActionEvent actionEvent) {
-    }
-
-    public void salvarLivro(ActionEvent actionEvent) {
-    }
-
-    public void limparCamposLivro(ActionEvent actionEvent) {
-    }
-
-
-
-    public void atualizarDashboard() {
-        carregarDadosDashboard();
-    }
-
-    private void carregarCardsDashboard() {
-        // Verificação de segurança
-        if (dashboardService == null) {
-            System.err.println("DashboardService não foi inicializado!");
-            dashboardService = new DashboardService();
-        }
-
-        try {
-            int totalEstudantes = dashboardService.getTotalEstudantes();
-            int livrosDisponiveis = dashboardService.getLivrosDisponiveis();
-            int emprestimosAtivos = dashboardService.getEmprestimosAtivos();
-            double multasPendentes = dashboardService.getMultasPendentes();
-
-            Platform.runLater(() -> {
-                lblTotalEstudantes.setText(String.valueOf(totalEstudantes));
-                lblLivrosDisponiveis.setText(String.valueOf(livrosDisponiveis));
-                lblEmprestimosAtivos.setText(String.valueOf(emprestimosAtivos));
-                lblMultasPendentes.setText(String.format("R$ %.2f", multasPendentes));
-            });
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            mostrarErro("Erro ao carregar cards: " + e.getMessage());
-        }
-    }
-
-    private void mostrarErro(String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erro");
-        alert.setHeaderText(null);
-        alert.setContentText(mensagem);
-        alert.showAndWait();
-    }
-
-    // Método para verificar alertas de livros com poucas unidades
-    private void verificarAlertas() {
-        try (ResultSet rs = dashboardService.getLivrosPoucasUnidades(3)) {
-            StringBuilder alerta = new StringBuilder("⚠️ Livros com poucas unidades:\n");
-            boolean temAlerta = false;
-
-            while (rs.next()) {
-                String titulo = rs.getString("titulo");
-                int unidades = rs.getInt("unidades");
-                alerta.append(String.format("• %s: %d unidade(s)\n", titulo, unidades));
-                temAlerta = true;
-            }
-
-            if (temAlerta) {
-                mostrarAlerta(alerta.toString());
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Método auxiliar para mostrar alerta
-    private void mostrarAlerta(String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Atenção");
-        alert.setHeaderText(null);
-        alert.setContentText(mensagem);
-        alert.showAndWait();
-    }
-
-    private void carregarUltimosEmprestimos() {
-        try (ResultSet rs = dashboardService.getUltimosEmprestimos()) {
-            ultimosEmprestimosList.clear();
-
-            while (rs.next()) {
-                int id = rs.getInt("id_emprestimo");
-                String estudante = rs.getString("estudante_nome");
-                String livro = rs.getString("livro_titulo");
-                Date dataSaida = rs.getDate("data_saida");
-                Date dataPrevista = rs.getDate("data_prevista_devolucao");
-                Date dataDevolucao = rs.getDate("data_devolucao_real");
-
-                String status = dataDevolucao == null ? "🔴 Em andamento" : "✅ Finalizado";
-                String item = String.format("#%d | %s | %s | %s | %s",
-                        id, estudante, livro, dataSaida.toString(), status);
-
-                ultimosEmprestimosList.add(item);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            ultimosEmprestimosList.add("Erro ao carregar empréstimos");
-        }
-    }
-
-    // Método público para atualizar apenas os cards
-    public void atualizarCards() {
-        carregarCardsDashboard();
-    }
-
-    // No método initialize, adicionar um timer para atualizar a cada 30 segundos
-    private void iniciarAtualizacaoAutomatica() {
-        Timeline timeline = new Timeline(new KeyFrame(Duration.seconds(30), e -> {
-            carregarDadosDashboard();
-        }));
-        timeline.setCycleCount(Timeline.INDEFINITE);
-        timeline.play();
-    }
-
-    public void realizarEmprestimo(ActionEvent actionEvent) {
-    }
-
-    public void realizarDevolucao(ActionEvent actionEvent) {
-    }
-
-    public void buscarPorRFID(ActionEvent actionEvent) {
-    }
-
-    public void buscarLivro(ActionEvent actionEvent) {
-    }
-
-    /**
-     * Called to initialize a controller after its root element has been
-     * completely processed.
-     *
-     * @param location  The location used to resolve relative paths for the root object, or
-     *                  {@code null} if the location is not known.
-     * @param resources The resources used to localize the root object, or {@code null} if
-     *                  the root object was not localized.
-     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         try {
-            // Inicializar serviços e listas PRIMEIRO
             dashboardService = new DashboardService();
             ultimosEmprestimosList = FXCollections.observableArrayList();
             topLivrosList = FXCollections.observableArrayList();
 
-            // Configurar ListViews
+            // Configurar ListViews do Dashboard
             listaUltimosEmprestimos.setItems(ultimosEmprestimosList);
             listaTopLivros.setItems(topLivrosList);
 
-            // Configurar telas
+            // INICIALIZAR OS CONTROLLERS SECUNDÁRIOS
+            inicializarControllers();
+
+            // Configurar tela inicial
             dashboard_form.setVisible(true);
             telaEstudante_form.setVisible(false);
             livros_form.setVisible(false);
+            emprestimos_form.setVisible(false);
             relatorio_form.setVisible(false);
-            if (emprestimos_form != null) {
-                emprestimos_form.setVisible(false);
-            }
 
             // Estilo do botão Dashboard
             dasboard_btn.setStyle("-fx-background-color: #ffffff33; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-radius: 5px;");
-
-            // Resetar estilo dos outros botões
-            estudantes_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
-            livros_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
-            relatorio_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
-            if (emprestimos_btn != null) {
-                emprestimos_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
-            }
 
             // Carregar dados do dashboard
             carregarDadosDashboard();
 
         } catch (Exception e) {
             e.printStackTrace();
-            mostrarErro("Erro ao inicializar dashboard: " + e.getMessage());
+            mostrarErro("Erro ao inicializar: " + e.getMessage());
         }
     }
 
-    public void exportarExcel(ActionEvent actionEvent) {
+    /**
+     * Inicializa todos os controllers secundários passando os componentes FXML
+     */
+    private void inicializarControllers() {
+        // Inicializar EstudanteController
+        estudanteController = new EstudanteController();
+        estudanteController.inicializar(
+                txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino,
+                txtBuscarEstudante, tabelaEstudantes, colId, colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID,
+                btnSalvarEstudante, btnAtualizarEstudante, btnDeletarEstudante, btnLimparEstudante
+        );
+
+        // Inicializar LivroController
+        livroController = new LivroController();
+        livroController.inicializar(
+                txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades,
+                txtBuscarLivro, cbDisciplina, cbStatus, tabelaLivros,
+                colLivroId, colTitulo, colAutor, colStatus, colCategoria, colDisciplina, colUnidades,
+                btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro,
+                txtCitacao, txtBibliografia
+        );
+
+        // Inicializar EmprestimoController
+        emprestimoController = new EmprestimoController();
+        emprestimoController.inicializar(
+                txtRFIDLeitura, txtCodigoLivro,
+                lblNomeEstudante, lblCursoEstudante, lblCodigoEstudante,
+                lblQtdEmprestimos, lblMultaPendente,
+                lblTituloLivro, lblAutoresLivro, lblUnidadesDisponiveis, lblCategoriaLivro, lblDisciplinaLivro,
+                tabelaEmprestimosAtivos, colEmprestimoId, colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo, colMultaEmprestimo
+        );
+
+        // Inicializar RelatorioController
+        relatorioController = new RelatorioController();
+        relatorioController.inicializar(
+                cbTipoRelatorio, dpDataInicio, dpDataFim, cbStatusEmprestimo, cbCurso,
+                lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso,
+                lblTotalRegistros, txtBuscarTabela, tabelaResultados, col1, col2, col3, col4, col5
+        );
     }
 
-    public void imprimirPDF(ActionEvent actionEvent) {
+    // ==================== MÉTODOS DE NAVEGAÇÃO ====================
+
+    @FXML
+    public void mudarTela(MouseEvent event) {
+        Label btnClicado = (Label) event.getSource();
+
+        // Esconder todas as telas
+        dashboard_form.setVisible(false);
+        telaEstudante_form.setVisible(false);
+        livros_form.setVisible(false);
+        emprestimos_form.setVisible(false);
+        relatorio_form.setVisible(false);
+
+        // Resetar estilos dos botões
+        resetarEstilosBotoes();
+
+        // Ativar tela selecionada
+        if (btnClicado == dasboard_btn) {
+            dashboard_form.setVisible(true);
+            aplicarEstiloAtivo(dasboard_btn);
+            carregarDadosDashboard();
+
+        } else if (btnClicado == estudantes_btn) {
+            telaEstudante_form.setVisible(true);
+            aplicarEstiloAtivo(estudantes_btn);
+            estudanteController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
+
+        } else if (btnClicado == livros_btn) {
+            livros_form.setVisible(true);
+            aplicarEstiloAtivo(livros_btn);
+            livroController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
+
+        } else if (btnClicado == emprestimos_btn) {
+            emprestimos_form.setVisible(true);
+            aplicarEstiloAtivo(emprestimos_btn);
+            emprestimoController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
+
+        } else if (btnClicado == relatorio_btn) {
+            relatorio_form.setVisible(true);
+            aplicarEstiloAtivo(relatorio_btn);
+            relatorioController.carregarDados();  // ← CHAMA O MÉTODO DO CONTROLLER
+        }
     }
 
-    public void gerarRelatorio(ActionEvent actionEvent) {
+    private void resetarEstilosBotoes() {
+        dasboard_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
+        estudantes_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
+        livros_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
+        emprestimos_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
+        relatorio_btn.setStyle("-fx-background-color: transparent; -fx-text-fill: white; -fx-padding: 10px;");
     }
 
-    public void buscarNaTabela(KeyEvent keyEvent) {
+    private void aplicarEstiloAtivo(Label botao) {
+        botao.setStyle("-fx-background-color: #ffffff33; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-radius: 5px;");
+    }
+
+    // ==================== MÉTODOS DO DASHBOARD ====================
+
+    private void carregarDadosDashboard() {
+        carregarCardsDashboard();
+        carregarUltimosEmprestimos();
+        carregarTopLivros();
+        carregarGraficoDashboard();
+    }
+
+    private void carregarCardsDashboard() {
+        new Thread(() -> {
+            try {
+                int totalEstudantes = dashboardService.getTotalEstudantes();
+                int livrosDisponiveis = dashboardService.getLivrosDisponiveis();
+                int emprestimosAtivos = dashboardService.getEmprestimosAtivos();
+                double multasPendentes = dashboardService.getMultasPendentes();
+
+                Platform.runLater(() -> {
+                    lblTotalEstudantes.setText(String.valueOf(totalEstudantes));
+                    lblLivrosDisponiveis.setText(String.valueOf(livrosDisponiveis));
+                    lblEmprestimosAtivos.setText(String.valueOf(emprestimosAtivos));
+                    lblMultasPendentes.setText(String.format("R$ %.2f", multasPendentes));
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void carregarUltimosEmprestimos() {
+        new Thread(() -> {
+            try (ResultSet rs = dashboardService.getUltimosEmprestimos()) {
+                ObservableList<String> items = FXCollections.observableArrayList();
+                while (rs.next()) {
+                    String item = String.format("#%d | %s | %s",
+                            rs.getInt("id_emprestimo"),
+                            rs.getString("estudante_nome"),
+                            rs.getString("livro_titulo"));
+                    items.add(item);
+                }
+                Platform.runLater(() -> {
+                    ultimosEmprestimosList.clear();
+                    ultimosEmprestimosList.addAll(items);
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void carregarTopLivros() {
+        new Thread(() -> {
+            try (ResultSet rs = dashboardService.getTopLivros()) {
+                ObservableList<String> items = FXCollections.observableArrayList();
+                int rank = 1;
+                while (rs.next()) {
+                    String item = String.format("%dº - %s (%d empréstimos)",
+                            rank++, rs.getString("titulo"), rs.getInt("total_emprestimos"));
+                    items.add(item);
+                }
+                Platform.runLater(() -> {
+                    topLivrosList.clear();
+                    topLivrosList.addAll(items);
+                });
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void carregarGraficoDashboard() {
+        // Implementar gráfico depois
+    }
+
+    private void mostrarErro(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erro");
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }

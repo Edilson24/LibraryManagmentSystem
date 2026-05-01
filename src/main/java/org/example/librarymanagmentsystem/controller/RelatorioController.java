@@ -3,83 +3,110 @@ package org.example.librarymanagmentsystem.controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import org.example.librarymanagmentsystem.services.RelatorioService;
-import java.net.URL;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ResourceBundle;
 
-public class RelatorioController implements Initializable {
-
-    @FXML private ComboBox<String> cbTipoRelatorio;
-    @FXML private DatePicker dpDataInicio, dpDataFim;
-    @FXML private ComboBox<String> cbStatusEmprestimo, cbCurso;
-    @FXML private Label lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso;
-    @FXML private Label lblTotalRegistros;
-    @FXML private TextField txtBuscarTabela;
-    @FXML private TableView<ObservableList<String>> tabelaResultados;
-    @FXML private TableColumn<ObservableList<String>, String> col1, col2, col3, col4, col5;
+public class RelatorioController {
 
     private RelatorioService relatorioService;
-    private ObservableList<ObservableList<String>> data;
-    private String tipoRelatorioAtual;
+    private ObservableList<ObservableList<String>> dadosRelatorio;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    private ComboBox<String> cbTipoRelatorio;
+    private DatePicker dpDataInicio, dpDataFim;
+    private ComboBox<String> cbStatusEmprestimo, cbCurso;
+    private Label lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso;
+    private Label lblTotalRegistros;
+    private TextField txtBuscarTabela;
+    private TableView<ObservableList<String>> tabelaResultados;
+    private TableColumn<ObservableList<String>, String> col1, col2, col3, col4, col5;
+
+    @SuppressWarnings("unchecked")
+    public void inicializar(
+            ComboBox<String> cbTipoRelatorio,
+            DatePicker dpDataInicio,
+            DatePicker dpDataFim,
+            ComboBox<String> cbStatusEmprestimo,
+            ComboBox<String> cbCurso,
+            Label lblFiltroDataInicio,
+            Label lblFiltroDataFim,
+            Label lblStatus,
+            Label lblCurso,
+            Label lblTotalRegistros,
+            TextField txtBuscarTabela,
+            TableView<?> tabelaResultados,
+            TableColumn<?, ?> col1,
+            TableColumn<?, ?> col2,
+            TableColumn<?, ?> col3,
+            TableColumn<?, ?> col4,
+            TableColumn<?, ?> col5) {
+
+        this.cbTipoRelatorio = cbTipoRelatorio;
+        this.dpDataInicio = dpDataInicio;
+        this.dpDataFim = dpDataFim;
+        this.cbStatusEmprestimo = cbStatusEmprestimo;
+        this.cbCurso = cbCurso;
+        this.lblFiltroDataInicio = lblFiltroDataInicio;
+        this.lblFiltroDataFim = lblFiltroDataFim;
+        this.lblStatus = lblStatus;
+        this.lblCurso = lblCurso;
+        this.lblTotalRegistros = lblTotalRegistros;
+        this.txtBuscarTabela = txtBuscarTabela;
+        this.tabelaResultados = (TableView<ObservableList<String>>) tabelaResultados;
+        this.col1 = (TableColumn<ObservableList<String>, String>) col1;
+        this.col2 = (TableColumn<ObservableList<String>, String>) col2;
+        this.col3 = (TableColumn<ObservableList<String>, String>) col3;
+        this.col4 = (TableColumn<ObservableList<String>, String>) col4;
+        this.col5 = (TableColumn<ObservableList<String>, String>) col5;
+
         try {
             relatorioService = new RelatorioService();
-            data = FXCollections.observableArrayList();
-            configurarTabela();
-            configurarListeners();
-            carregarCursos();
         } catch (SQLException e) {
             e.printStackTrace();
-            mostrarErro("Erro ao inicializar: " + e.getMessage());
         }
+
+        dadosRelatorio = FXCollections.observableArrayList();
+
+        configurarTabela();
+        configurarEventos();
+        carregarDados();
     }
 
     private void configurarTabela() {
-        col1.setCellValueFactory(new PropertyValueFactory<>("0"));
-        col2.setCellValueFactory(new PropertyValueFactory<>("1"));
-        col3.setCellValueFactory(new PropertyValueFactory<>("2"));
-        col4.setCellValueFactory(new PropertyValueFactory<>("3"));
-        col5.setCellValueFactory(new PropertyValueFactory<>("4"));
+        /*col1.setCellValueFactory(cellData -> cellData.getValue()[0]);
+        col2.setCellValueFactory(cellData -> cellData.getValue()[1]);
+        col3.setCellValueFactory(cellData -> cellData.getValue()[2]);
+        col4.setCellValueFactory(cellData -> cellData.getValue()[3]);
+        col5.setCellValueFactory(cellData -> cellData.getValue()[4]);
 
-        tabelaResultados.setItems(data);
-
-        // Double-click na tabela para ver detalhes
-        tabelaResultados.setOnMouseClicked(this::aoClicarNaTabela);
+        tabelaResultados.setItems(dadosRelatorio);*/
     }
 
-    private void configurarListeners() {
-        cbTipoRelatorio.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                ajustarFiltrosPorTipo(newVal);
-                carregarDados();
-            }
-        });
+    private void configurarEventos() {
+        cbTipoRelatorio.setOnAction(e -> carregarRelatorio());
+        dpDataInicio.setOnAction(e -> carregarRelatorio());
+        dpDataFim.setOnAction(e -> carregarRelatorio());
+        cbStatusEmprestimo.setOnAction(e -> carregarRelatorio());
+        cbCurso.setOnAction(e -> carregarRelatorio());
 
-        dpDataInicio.valueProperty().addListener((obs, oldVal, newVal) -> carregarDados());
-        dpDataFim.valueProperty().addListener((obs, oldVal, newVal) -> carregarDados());
-        cbStatusEmprestimo.valueProperty().addListener((obs, oldVal, newVal) -> carregarDados());
-        cbCurso.valueProperty().addListener((obs, oldVal, newVal) -> carregarDados());
+        txtBuscarTabela.textProperty().addListener((obs, old, novo) -> filtrarTabela());
     }
 
-    private void ajustarFiltrosPorTipo(String tipo) {
-        // Esconder todos os filtros primeiro
+    public void carregarDados() {
+        cbTipoRelatorio.setItems(FXCollections.observableArrayList(
+                "📚 Livros",
+                "👨‍🎓 Estudantes",
+                "🔄 Empréstimos",
+                "💰 Multas",
+                "📈 Estatísticas"
+        ));
+        cbStatusEmprestimo.setItems(FXCollections.observableArrayList("Todos", "Ativos", "Finalizados"));
+
+        cbTipoRelatorio.setValue("📚 Livros");
+
+        // Esconder filtros inicialmente
         lblFiltroDataInicio.setVisible(false);
         lblFiltroDataFim.setVisible(false);
         lblStatus.setVisible(false);
@@ -88,388 +115,201 @@ public class RelatorioController implements Initializable {
         dpDataFim.setVisible(false);
         cbStatusEmprestimo.setVisible(false);
         cbCurso.setVisible(false);
+    }
 
-        // Mostrar filtros conforme o tipo
-        if (tipo.contains("Empréstimos")) {
-            lblFiltroDataInicio.setVisible(true);
-            lblFiltroDataFim.setVisible(true);
-            lblStatus.setVisible(true);
-            dpDataInicio.setVisible(true);
-            dpDataFim.setVisible(true);
-            cbStatusEmprestimo.setVisible(true);
-            dpDataInicio.setValue(LocalDate.now().minusMonths(1));
-            dpDataFim.setValue(LocalDate.now());
-            cbStatusEmprestimo.setValue("Todos");
-        } else if (tipo.contains("Estudantes")) {
-            lblCurso.setVisible(true);
-            cbCurso.setVisible(true);
+    private void carregarRelatorio() {
+        String tipo = cbTipoRelatorio.getValue();
+        if (tipo == null) return;
+
+        // Ajustar visibilidade dos filtros
+        ajustarFiltros(tipo);
+
+        dadosRelatorio.clear();
+
+        new Thread(() -> {
+            try {
+                if (tipo.contains("Livros")) {
+                    carregarLivros();
+                } else if (tipo.contains("Estudantes")) {
+                    carregarEstudantes();
+                } else if (tipo.contains("Empréstimos")) {
+                    carregarEmprestimos();
+                } else if (tipo.contains("Multas")) {
+                    carregarMultas();
+                } else if (tipo.contains("Estatísticas")) {
+                    carregarEstatisticas();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                Platform.runLater(() -> mostrarErro("Erro ao carregar: " + e.getMessage()));
+            }
+        }).start();
+    }
+
+    private void ajustarFiltros(String tipo) {
+        boolean isEmprestimo = tipo.contains("Empréstimos");
+        boolean isEstudante = tipo.contains("Estudantes");
+
+        lblFiltroDataInicio.setVisible(isEmprestimo);
+        lblFiltroDataFim.setVisible(isEmprestimo);
+        lblStatus.setVisible(isEmprestimo);
+        dpDataInicio.setVisible(isEmprestimo);
+        dpDataFim.setVisible(isEmprestimo);
+        cbStatusEmprestimo.setVisible(isEmprestimo);
+
+        lblCurso.setVisible(isEstudante);
+        cbCurso.setVisible(isEstudante);
+
+        if (isEmprestimo) {
+            if (dpDataInicio.getValue() == null) dpDataInicio.setValue(java.time.LocalDate.now().minusMonths(1));
+            if (dpDataFim.getValue() == null) dpDataFim.setValue(java.time.LocalDate.now());
+            if (cbStatusEmprestimo.getValue() == null) cbStatusEmprestimo.setValue("Todos");
+        }
+
+        if (isEstudante && cbCurso.getValue() == null) {
+            cbCurso.setItems(FXCollections.observableArrayList("Todos", "Computação", "Engenharia", "Administração", "Direito"));
             cbCurso.setValue("Todos");
         }
     }
 
-    private void carregarCursos() {
-        try (ResultSet rs = relatorioService.getCursos()) {
-            ObservableList<String> cursos = FXCollections.observableArrayList();
-            cursos.add("Todos");
+    private void carregarLivros() throws SQLException {
+        try (ResultSet rs = relatorioService.getRelatorioLivros()) {
             while (rs.next()) {
-                cursos.add(rs.getString("curso"));
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(String.valueOf(rs.getInt("id_livro")));
+                row.add(rs.getString("titulo"));
+                row.add(rs.getString("autor"));
+                row.add(String.valueOf(rs.getInt("ano_publicacao")));
+                row.add(rs.getString("status"));
+                dadosRelatorio.add(row);
             }
-            cbCurso.setItems(cursos);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            Platform.runLater(() -> lblTotalRegistros.setText("Total: " + dadosRelatorio.size() + " livros"));
         }
     }
 
-    @FXML
-    private void gerarRelatorio() {
-        carregarDados();
-    }
+    private void carregarEstudantes() throws SQLException {
+        String curso = cbCurso.getValue();
+        if (curso != null && curso.equals("Todos")) curso = null;
 
-    private void carregarDados() {
-        String tipo = cbTipoRelatorio.getValue();
-        if (tipo == null) return;
-
-        tipoRelatorioAtual = tipo;
-        data.clear();
-
-        new Thread(() -> {
-            try {
-                ResultSet rs = null;
-
-                if (tipo.contains("Livros")) {
-                    rs = relatorioService.getRelatorioLivros();
-                    carregarDadosLivros(rs);
-                } else if (tipo.contains("Estudantes")) {
-                    String curso = cbCurso.getValue();
-                    if (curso != null && curso.equals("Todos")) curso = null;
-                    rs = relatorioService.getRelatorioEstudantes(curso);
-                    carregarDadosEstudantes(rs);
-                } else if (tipo.contains("Empréstimos")) {
-                    rs = relatorioService.getRelatorioEmprestimos(
-                            dpDataInicio.getValue(),
-                            dpDataFim.getValue(),
-                            cbStatusEmprestimo.getValue()
-                    );
-                    carregarDadosEmprestimos(rs);
-                } else if (tipo.contains("Multas")) {
-                    rs = relatorioService.getRelatorioMultas();
-                    carregarDadosMultas(rs);
-                } else if (tipo.contains("Estatísticas")) {
-                    rs = relatorioService.getEstatisticas();
-                    carregarDadosEstatisticas(rs);
-                }
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-                Platform.runLater(() -> mostrarErro("Erro ao carregar dados: " + e.getMessage()));
+        try (ResultSet rs = relatorioService.getRelatorioEstudantes(curso)) {
+            while (rs.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(String.valueOf(rs.getInt("id_estudante")));
+                row.add(rs.getString("nome"));
+                row.add(rs.getString("curso"));
+                row.add(rs.getString("codigo_estudante"));
+                row.add(rs.getString("departamento"));
+                dadosRelatorio.add(row);
             }
-        }).start();
+            Platform.runLater(() -> lblTotalRegistros.setText("Total: " + dadosRelatorio.size() + " estudantes"));
+        }
     }
 
-    private void carregarDadosLivros(ResultSet rs) throws SQLException {
-        ObservableList<ObservableList<String>> items = FXCollections.observableArrayList();
-        int total = 0;
+    private void carregarEmprestimos() throws SQLException {
+        java.time.LocalDate dataInicio = dpDataInicio.getValue();
+        java.time.LocalDate dataFim = dpDataFim.getValue();
+        String status = cbStatusEmprestimo.getValue();
 
-        while (rs.next()) {
-            ObservableList<String> row = FXCollections.observableArrayList();
-            row.add(String.valueOf(rs.getInt("id_livro")));
-            row.add(rs.getString("titulo"));
-            row.add(rs.getString("autor"));
-            row.add(String.valueOf(rs.getInt("ano_publicacao")));
-            row.add(rs.getString("status"));
-            items.add(row);
-            total++;
-        }
-
-        final int finalTotal = total;
-        Platform.runLater(() -> {
-            data.setAll(items);
-            lblTotalRegistros.setText("Total: " + finalTotal + " livros");
-        });
-    }
-
-    private void carregarDadosEstudantes(ResultSet rs) throws SQLException {
-        ObservableList<ObservableList<String>> items = FXCollections.observableArrayList();
-        int total = 0;
-
-        while (rs.next()) {
-            ObservableList<String> row = FXCollections.observableArrayList();
-            row.add(String.valueOf(rs.getInt("id_estudante")));
-            row.add(rs.getString("nome"));
-            row.add(rs.getString("curso"));
-            row.add(rs.getString("codigo_estudante"));
-            row.add(rs.getString("departamento"));
-            items.add(row);
-            total++;
-        }
-
-        final int finalTotal = total;
-        Platform.runLater(() -> {
-            data.setAll(items);
-            lblTotalRegistros.setText("Total: " + finalTotal + " estudantes");
-        });
-    }
-
-    private void carregarDadosEmprestimos(ResultSet rs) throws SQLException {
-        ObservableList<ObservableList<String>> items = FXCollections.observableArrayList();
-        int total = 0;
-
-        while (rs.next()) {
-            ObservableList<String> row = FXCollections.observableArrayList();
-            row.add(String.valueOf(rs.getInt("id_emprestimo")));
-            row.add(rs.getString("estudante_nome"));
-            row.add(rs.getString("livro_titulo"));
-            row.add(rs.getDate("data_saida") != null ? rs.getDate("data_saida").toString() : "");
-            String status = rs.getDate("data_devolucao_real") == null ? "Ativo" : "Finalizado";
-            row.add(status);
-            items.add(row);
-            total++;
-        }
-
-        final int finalTotal = total;
-        Platform.runLater(() -> {
-            data.setAll(items);
-            lblTotalRegistros.setText("Total: " + finalTotal + " empréstimos");
-        });
-    }
-
-    private void carregarDadosMultas(ResultSet rs) throws SQLException {
-        ObservableList<ObservableList<String>> items = FXCollections.observableArrayList();
-        int total = 0;
-
-        while (rs.next()) {
-            ObservableList<String> row = FXCollections.observableArrayList();
-            row.add(String.valueOf(rs.getInt("id_emprestimo")));
-            row.add(rs.getString("estudante_nome"));
-            row.add(rs.getString("livro_titulo"));
-            row.add(String.format("R$ %.2f", rs.getDouble("valor_multa")));
-            row.add(rs.getBoolean("pago") ? "Pago" : "Pendente");
-            items.add(row);
-            total++;
-        }
-
-        final int finalTotal = total;
-        Platform.runLater(() -> {
-            data.setAll(items);
-            lblTotalRegistros.setText("Total: " + finalTotal + " multas | Valor total: R$ " + calcularTotalMultas(items));
-        });
-    }
-
-    private void carregarDadosEstatisticas(ResultSet rs) throws SQLException {
-        ObservableList<ObservableList<String>> items = FXCollections.observableArrayList();
-
-        while (rs.next()) {
-            ObservableList<String> row = FXCollections.observableArrayList();
-            row.add("");
-            row.add(rs.getString("indicador"));
-            row.add(rs.getString("valor"));
-            row.add("");
-            row.add("");
-            items.add(row);
-        }
-
-        Platform.runLater(() -> data.setAll(items));
-    }
-
-    @FXML
-    private void imprimirPDF() {
-        if (tipoRelatorioAtual == null || data.isEmpty()) {
-            mostrarAviso("Nenhum dado para gerar PDF. Execute uma consulta primeiro.");
-            return;
-        }
-
-        new Thread(() -> {
-            try {
-                ResultSet rs = obterResultSetAtual();
-                String filtros = montarFiltrosParaPDF();
-                relatorioService.gerarPDF(tipoRelatorioAtual, rs, filtros);
-
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    alert.setTitle("Sucesso");
-                    alert.setHeaderText(null);
-                    alert.setContentText("PDF gerado com sucesso! O arquivo será aberto automaticamente.");
-                    alert.showAndWait();
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Platform.runLater(() -> mostrarErro("Erro ao gerar PDF: " + e.getMessage()));
+        try (ResultSet rs = relatorioService.getRelatorioEmprestimos(dataInicio, dataFim, status)) {
+            while (rs.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(String.valueOf(rs.getInt("id_emprestimo")));
+                row.add(rs.getString("estudante_nome"));
+                row.add(rs.getString("livro_titulo"));
+                row.add(rs.getDate("data_saida") != null ? rs.getDate("data_saida").toString() : "");
+                String statusEmprestimo = rs.getDate("data_devolucao_real") == null ? "Ativo" : "Finalizado";
+                row.add(statusEmprestimo);
+                dadosRelatorio.add(row);
             }
-        }).start();
-    }
-
-    private ResultSet obterResultSetAtual() throws SQLException {
-        if (tipoRelatorioAtual.contains("Livros")) {
-            return relatorioService.getRelatorioLivros();
-        } else if (tipoRelatorioAtual.contains("Estudantes")) {
-            String curso = cbCurso.getValue();
-            if (curso != null && curso.equals("Todos")) curso = null;
-            return relatorioService.getRelatorioEstudantes(curso);
-        } else if (tipoRelatorioAtual.contains("Empréstimos")) {
-            return relatorioService.getRelatorioEmprestimos(
-                    dpDataInicio.getValue(), dpDataFim.getValue(), cbStatusEmprestimo.getValue()
-            );
+            Platform.runLater(() -> lblTotalRegistros.setText("Total: " + dadosRelatorio.size() + " empréstimos"));
         }
-        return null;
     }
 
-    private String montarFiltrosParaPDF() {
-        StringBuilder filtros = new StringBuilder();
-        if (tipoRelatorioAtual.contains("Empréstimos")) {
-            filtros.append("Período: ").append(dpDataInicio.getValue()).append(" a ").append(dpDataFim.getValue());
-            filtros.append(" | Status: ").append(cbStatusEmprestimo.getValue());
-        } else if (tipoRelatorioAtual.contains("Estudantes")) {
-            filtros.append("Curso: ").append(cbCurso.getValue());
-        } else {
-            filtros.append("Todos os registros");
+    private void carregarMultas() throws SQLException {
+        try (ResultSet rs = relatorioService.getRelatorioMultas()) {
+            double totalMultas = 0;
+            while (rs.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add(String.valueOf(rs.getInt("id_emprestimo")));
+                row.add(rs.getString("estudante_nome"));
+                row.add(rs.getString("livro_titulo"));
+                row.add(String.format("R$ %.2f", rs.getDouble("valor_multa")));
+                row.add(rs.getBoolean("pago") ? "Pago" : "Pendente");
+                dadosRelatorio.add(row);
+                totalMultas += rs.getDouble("valor_multa");
+            }
+            final double total = totalMultas;
+            Platform.runLater(() -> lblTotalRegistros.setText(String.format("Total: %d multas | Valor: R$ %.2f", dadosRelatorio.size(), total)));
         }
-        return filtros.toString();
     }
 
-    @FXML
-    private void exportarExcel() {
-        // Implementar exportação para Excel se necessário
-        mostrarInfo("Funcionalidade de exportação Excel será implementada em breve.");
+    private void carregarEstatisticas() throws SQLException {
+        try (ResultSet rs = relatorioService.getEstatisticas()) {
+            while (rs.next()) {
+                ObservableList<String> row = FXCollections.observableArrayList();
+                row.add("");
+                row.add(rs.getString("indicador"));
+                row.add(rs.getString("valor"));
+                row.add("");
+                row.add("");
+                dadosRelatorio.add(row);
+            }
+            Platform.runLater(() -> lblTotalRegistros.setText("Total: " + dadosRelatorio.size() + " indicadores"));
+        }
     }
 
-    @FXML
-    private void buscarNaTabela() {
-        String busca = txtBuscarTabela.getText().toLowerCase();
-        if (busca.isEmpty()) {
-            carregarDados();
+    private void filtrarTabela() {
+        String filtro = txtBuscarTabela.getText().toLowerCase();
+        if (filtro.isEmpty()) {
+            carregarRelatorio();
             return;
         }
 
         ObservableList<ObservableList<String>> filtrados = FXCollections.observableArrayList();
-        for (ObservableList<String> row : data) {
+        for (ObservableList<String> row : dadosRelatorio) {
             for (String cell : row) {
-                if (cell.toLowerCase().contains(busca)) {
+                if (cell.toLowerCase().contains(filtro)) {
                     filtrados.add(row);
                     break;
                 }
             }
         }
-
         tabelaResultados.setItems(filtrados);
-        lblTotalRegistros.setText("Exibindo: " + filtrados.size() + " de " + data.size() + " registros");
+        lblTotalRegistros.setText("Exibindo: " + filtrados.size() + " de " + dadosRelatorio.size());
     }
 
-    private void aoClicarNaTabela(MouseEvent event) {
-        if (event.getClickCount() == 2) {
-            ObservableList<String> selected = tabelaResultados.getSelectionModel().getSelectedItem();
-            if (selected != null) {
-                abrirPopupDetalhes(selected);
-            }
+    public void gerarRelatorio() {
+        carregarRelatorio();
+    }
+
+    public void imprimirPDF() {
+        if (dadosRelatorio.isEmpty()) {
+            mostrarAviso("Nenhum dado para gerar PDF. Execute uma consulta primeiro.");
+            return;
         }
+        mostrarInfo("Funcionalidade de PDF em desenvolvimento.");
     }
 
-    private void abrirPopupDetalhes(ObservableList<String> dados) {
-        Stage popupStage = new Stage();
-        popupStage.initModality(Modality.APPLICATION_MODAL);
-        popupStage.setTitle("Detalhes do Registro");
-
-        VBox vbox = new VBox(15);
-        vbox.setPadding(new Insets(20));
-        vbox.setStyle("-fx-background-color: white;");
-
-        Label titulo = new Label("📄 INFORMAÇÕES DO REGISTRO");
-        titulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1b5e90;");
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-
-        // Adicionar campos baseado no tipo
-        if (tipoRelatorioAtual.contains("Livros")) {
-            grid.add(new Label("ID:"), 0, 0);
-            grid.add(new Label(dados.get(0)), 1, 0);
-            grid.add(new Label("Título:"), 0, 1);
-            grid.add(new Label(dados.get(1)), 1, 1);
-            grid.add(new Label("Autor:"), 0, 2);
-            grid.add(new Label(dados.get(2)), 1, 2);
-            grid.add(new Label("Ano:"), 0, 3);
-            grid.add(new Label(dados.get(3)), 1, 3);
-            grid.add(new Label("Status:"), 0, 4);
-            grid.add(new Label(dados.get(4)), 1, 4);
-        } else if (tipoRelatorioAtual.contains("Estudantes")) {
-            grid.add(new Label("ID:"), 0, 0);
-            grid.add(new Label(dados.get(0)), 1, 0);
-            grid.add(new Label("Nome:"), 0, 1);
-            grid.add(new Label(dados.get(1)), 1, 1);
-            grid.add(new Label("Curso:"), 0, 2);
-            grid.add(new Label(dados.get(2)), 1, 2);
-            grid.add(new Label("Código:"), 0, 3);
-            grid.add(new Label(dados.get(3)), 1, 3);
-            grid.add(new Label("Departamento:"), 0, 4);
-            grid.add(new Label(dados.get(4)), 1, 4);
-        } else if (tipoRelatorioAtual.contains("Empréstimos")) {
-            grid.add(new Label("ID Empréstimo:"), 0, 0);
-            grid.add(new Label(dados.get(0)), 1, 0);
-            grid.add(new Label("Estudante:"), 0, 1);
-            grid.add(new Label(dados.get(1)), 1, 1);
-            grid.add(new Label("Livro:"), 0, 2);
-            grid.add(new Label(dados.get(2)), 1, 2);
-            grid.add(new Label("Data Saída:"), 0, 3);
-            grid.add(new Label(dados.get(3)), 1, 3);
-            grid.add(new Label("Status:"), 0, 4);
-            grid.add(new Label(dados.get(4)), 1, 4);
+    public void exportarExcel() {
+        if (dadosRelatorio.isEmpty()) {
+            mostrarAviso("Nenhum dado para exportar.");
+            return;
         }
-
-        HBox buttons = new HBox(10);
-        Button btnCancelar = new Button("Cancelar");
-        Button btnImprimir = new Button("Imprimir PDF");
-
-        btnCancelar.setStyle("-fx-background-color: #9e9e9e; -fx-text-fill: white; -fx-padding: 10 20;");
-        btnImprimir.setStyle("-fx-background-color: #1b5e90; -fx-text-fill: white; -fx-padding: 10 20;");
-
-        btnCancelar.setOnAction(e -> popupStage.close());
-        btnImprimir.setOnAction(e -> {
-            imprimirRegistroEspecifico(dados);
-            popupStage.close();
-        });
-
-        buttons.getChildren().addAll(btnCancelar, btnImprimir);
-
-        vbox.getChildren().addAll(titulo, grid, buttons);
-        Scene scene = new Scene(vbox, 500, 350);
-        popupStage.setScene(scene);
-        popupStage.showAndWait();
+        mostrarInfo("Funcionalidade de Excel em desenvolvimento.");
     }
 
-    private void imprimirRegistroEspecifico(ObservableList<String> dados) {
-        mostrarInfo("Gerando PDF para o registro selecionado...");
-        // Implementar geração de PDF para um registro específico
-    }
-
-    private String calcularTotalMultas(ObservableList<ObservableList<String>> items) {
-        double total = 0;
-        for (ObservableList<String> row : items) {
-            String valorStr = row.get(3).replace("R$ ", "").replace(",", ".");
-            try {
-                total += Double.parseDouble(valorStr);
-            } catch (NumberFormatException e) {}
-        }
-        return String.format("%.2f", total);
+    private void mostrarInfo(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, msg, ButtonType.OK);
+        alert.showAndWait();
     }
 
     private void mostrarErro(String msg) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erro");
-        alert.setContentText(msg);
+        Alert alert = new Alert(Alert.AlertType.ERROR, msg, ButtonType.OK);
         alert.showAndWait();
     }
 
     private void mostrarAviso(String msg) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Aviso");
-        alert.setContentText(msg);
-        alert.showAndWait();
-    }
-
-    private void mostrarInfo(String msg) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Informação");
-        alert.setContentText(msg);
+        Alert alert = new Alert(Alert.AlertType.WARNING, msg, ButtonType.OK);
         alert.showAndWait();
     }
 }
