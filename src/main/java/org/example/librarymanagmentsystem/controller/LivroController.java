@@ -12,7 +12,6 @@ import org.example.librarymanagmentsystem.entidades.Livro;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class LivroController {
 
@@ -23,6 +22,7 @@ public class LivroController {
     private Livro livroSelecionado;
 
     private TextField txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades;
+    private Spinner<Integer> spUnidades;
     private TextField txtBuscarLivro;
     private ComboBox<Disciplina> cbDisciplina;
     private ComboBox<String> cbStatus;
@@ -57,7 +57,8 @@ public class LivroController {
             Button btnDeletar,
             Button btnLimpar,
             TextArea txtCitacao,
-            TextArea txtBibliografia) {
+            TextArea txtBibliografia,
+            Spinner<Integer> spUnidades) {
 
         this.txtTitulo = txtTitulo;
         this.txtAutor = txtAutor;
@@ -82,6 +83,7 @@ public class LivroController {
         this.btnLimpar = btnLimpar;
         this.txtCitacao = txtCitacao;
         this.txtBibliografia = txtBibliografia;
+        this.spUnidades = this.spUnidades;
 
         livroDAO = new LivroDAO();
         disciplinaDAO = new DisciplinaDAO();

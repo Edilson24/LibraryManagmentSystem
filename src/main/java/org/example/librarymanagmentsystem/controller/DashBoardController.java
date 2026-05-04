@@ -80,7 +80,7 @@ public class DashBoardController implements Initializable {
     // ==================== COMPONENTES DA TELA RELATÓRIOS ====================
     @FXML private ComboBox<String> cbTipoRelatorio;
     @FXML private DatePicker dpDataInicio, dpDataFim;
-    @FXML private ComboBox<String> cbStatusEmprestimoRelatorio, cbCurso;
+    @FXML private ComboBox<String> cbStatusEmprestimo, cbCurso;
     @FXML private Label lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso;
     @FXML private Label lblTotalRegistros;
     @FXML private TextField txtBuscarTabela;
@@ -150,7 +150,7 @@ public class DashBoardController implements Initializable {
                     txtBuscarLivro, cbDisciplina, cbStatus, tabelaLivros,
                     colLivroId, colTitulo, colAutor, colStatus, colCategoria, colDisciplina, colUnidades,
                     btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro,
-                    txtCitacao, txtBibliografia
+                    txtCitacao, txtBibliografia, spUnidades
             );
             System.out.println("LivroController inicializado com sucesso!");
         } catch (Exception e) {
@@ -174,7 +174,7 @@ public class DashBoardController implements Initializable {
 
         try {
             relatorioController.inicializar(
-                    cbTipoRelatorio, dpDataInicio, dpDataFim, cbStatusEmprestimoRelatorio, cbCurso,
+                    cbTipoRelatorio, dpDataInicio, dpDataFim, cbStatusEmprestimo, cbCurso,
                     lblFiltroDataInicio, lblFiltroDataFim, lblStatus, lblCurso,
                     lblTotalRegistros, txtBuscarTabela, tabelaResultados, col1, col2, col3, col4, col5
             );
