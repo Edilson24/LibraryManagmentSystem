@@ -116,12 +116,12 @@ public class RelatorioService {
 
     // Gerar PDF
     public void gerarPDF(String tipo, ResultSet dados, String filtros) throws Exception {
-        String outputPath = "relatorios/relatorio_" + tipo + "_" + System.currentTimeMillis() + ".pdf";
+        String outputPath = "relatorios/relatorio_" + tipo.replaceAll("[^a-zA-Z0-9]", "_") + "_" + System.currentTimeMillis() + ".pdf";
 
         // Criar diretório se não existir
         new java.io.File("relatorios").mkdirs();
 
-        Document document = new Document(PageSize.A4);
+        Document document = new Document(PageSize.A4.rotate()); // Orientação paisagem para mais colunas
         PdfWriter.getInstance(document, new FileOutputStream(outputPath));
         document.open();
 
@@ -152,30 +152,81 @@ public class RelatorioService {
         ResultSetMetaData metaData = dados.getMetaData();
         int columnCount = metaData.getColumnCount();
 
+        // Calcular larguras das colunas (distribuição proporcional)
+        float[] columnWidths = new float[columnCount];
+        for (int i = 0; i < columnCount; i++) {
+            columnWidths[i] = 1f;
+        }
+
         PdfPTable table = new PdfPTable(columnCount);
         table.setWidthPercentage(100);
+        table.setWidths(columnWidths);
 
         // Adicionar cabeçalhos
         for (int i = 1; i <= columnCount; i++) {
-            PdfPCell header = new PdfPCell(new Phrase(metaData.getColumnName(i), headerFont));
+            String columnName = metaData.getColumnName(i);
+            // Traduzir nomes das colunas para português
+            String displayName = traduzirNomeColuna(columnName);
+
+            PdfPCell header = new PdfPCell(new Phrase(displayName, headerFont));
             header.setBackgroundColor(BaseColor.LIGHT_GRAY);
             header.setHorizontalAlignment(Element.ALIGN_CENTER);
+            header.setPadding(8);
             table.addCell(header);
         }
 
         // Adicionar dados
+        int rowCount = 0;
         while (dados.next()) {
+            rowCount++;
             for (int i = 1; i <= columnCount; i++) {
                 String value = dados.getString(i) != null ? dados.getString(i) : "";
                 PdfPCell cell = new PdfPCell(new Phrase(value, normalFont));
+                cell.setPadding(5);
                 table.addCell(cell);
             }
         }
 
+        // Adicionar rodapé com total de registros
         document.add(table);
+        document.add(new Paragraph(" "));
+        Paragraph footer = new Paragraph("Total de registros: " + rowCount, normalFont);
+        footer.setAlignment(Element.ALIGN_RIGHT);
+        document.add(footer);
+
         document.close();
 
         // Abrir o PDF gerado
         java.awt.Desktop.getDesktop().open(new java.io.File(outputPath));
+    }
+
+    private String traduzirNomeColuna(String columnName) {
+        switch (columnName) {
+            case "id_livro": return "ID Livro";
+            case "titulo": return "Título";
+            case "autor": return "Autor";
+            case "ano_publicacao": return "Ano";
+            case "isbn": return "ISBN";
+            case "status": return "Status";
+            case "categoria": return "Categoria";
+            case "unidades": return "Unidades";
+            case "nome_disciplina": return "Disciplina";
+            case "id_estudante": return "ID Estudante";
+            case "nome": return "Nome";
+            case "curso": return "Curso";
+            case "departamento": return "Departamento";
+            case "codigo_estudante": return "Código";
+            case "id_cartao_arduino": return "Cartão RFID";
+            case "id_emprestimo": return "ID Empréstimo";
+            case "estudante_nome": return "Estudante";
+            case "livro_titulo": return "Livro";
+            case "data_saida": return "Data Saída";
+            case "data_prevista_devolucao": return "Prev. Devolução";
+            case "data_devolucao_real": return "Data Devolução";
+            case "valor_multa": return "Multa";
+            case "pago": return "Pago";
+            case "indicador": return "Indicador";
+            default: return columnName;
+        }
     }
 }

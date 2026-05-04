@@ -8,6 +8,7 @@ import org.example.librarymanagmentsystem.services.RelatorioService;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 
 public class RelatorioController {
 
@@ -335,7 +336,35 @@ public class RelatorioController {
             mostrarAviso("Nenhum dado para gerar PDF. Execute uma consulta primeiro.");
             return;
         }
-        mostrarInfo("Funcionalidade de PDF em desenvolvimento.");
+
+        try {
+            // Determinar o tipo de relatório atual
+            String tipo = cbTipoRelatorio.getValue();
+            if (tipo == null) {
+                mostrarAviso("Selecione um tipo de relatório primeiro!");
+                return;
+            }
+
+            // Obter os dados do relatório atual (ResultSet)
+            ResultSet rs = obterResultSetAtual();
+
+            if (rs == null) {
+                mostrarErro("Não foi possível obter os dados do relatório.");
+                return;
+            }
+
+            // Montar string com os filtros aplicados
+            String filtros = montarFiltrosString();
+
+            // Chamar o serviço para gerar PDF
+            relatorioService.gerarPDF(tipo, rs, filtros);
+
+            mostrarSucesso("PDF gerado com sucesso! O arquivo será aberto automaticamente.");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            mostrarErro("Erro ao gerar PDF: " + e.getMessage());
+        }
     }
 
     public void exportarExcel() {
@@ -358,6 +387,74 @@ public class RelatorioController {
 
     private void mostrarAviso(String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING, msg, ButtonType.OK);
+        alert.showAndWait();
+    }
+
+    private ResultSet obterResultSetAtual() throws SQLException {
+        String tipo = cbTipoRelatorio.getValue();
+
+        if (tipo.contains("Livros")) {
+            return relatorioService.getRelatorioLivros();
+        } else if (tipo.contains("Estudantes")) {
+            String curso = (cbCurso != null && cbCurso.getValue() != null && !cbCurso.getValue().equals("Todos"))
+                    ? cbCurso.getValue() : null;
+            return relatorioService.getRelatorioEstudantes(curso);
+        } else if (tipo.contains("Empréstimos")) {
+            java.time.LocalDate dataInicio = dpDataInicio != null ? dpDataInicio.getValue() : null;
+            java.time.LocalDate dataFim = dpDataFim != null ? dpDataFim.getValue() : null;
+            String status = cbStatusEmprestimo != null ? cbStatusEmprestimo.getValue() : "Todos";
+            return relatorioService.getRelatorioEmprestimos(dataInicio, dataFim, status);
+        } else if (tipo.contains("Multas")) {
+            return relatorioService.getRelatorioMultas();
+        } else if (tipo.contains("Estatísticas")) {
+            return relatorioService.getEstatisticas();
+        }
+
+        return null;
+    }
+
+    private String montarFiltrosString() {
+        StringBuilder filtros = new StringBuilder();
+        String tipo = cbTipoRelatorio.getValue();
+
+        if (tipo.contains("Empréstimos")) {
+            filtros.append("Período: ");
+            if (dpDataInicio.getValue() != null) {
+                filtros.append(dpDataInicio.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            } else {
+                filtros.append("início não definido");
+            }
+            filtros.append(" a ");
+            if (dpDataFim.getValue() != null) {
+                filtros.append(dpDataFim.getValue().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+            } else {
+                filtros.append("fim não definido");
+            }
+            filtros.append(" | Status: ");
+            filtros.append(cbStatusEmprestimo != null ? cbStatusEmprestimo.getValue() : "Todos");
+
+        } else if (tipo.contains("Estudantes")) {
+            filtros.append("Curso: ");
+            filtros.append(cbCurso != null && cbCurso.getValue() != null ? cbCurso.getValue() : "Todos");
+
+        } else if (tipo.contains("Livros")) {
+            filtros.append("Todos os livros cadastrados");
+
+        } else if (tipo.contains("Multas")) {
+            filtros.append("Todas as multas");
+
+        } else if (tipo.contains("Estatísticas")) {
+            filtros.append("Estatísticas gerais do sistema");
+        }
+
+        return filtros.toString();
+    }
+
+    private void mostrarSucesso(String msg) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Sucesso");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
         alert.showAndWait();
     }
 }

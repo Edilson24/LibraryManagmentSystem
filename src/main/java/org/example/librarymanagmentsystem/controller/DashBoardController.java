@@ -76,6 +76,7 @@ public class DashBoardController implements Initializable {
     @FXML private TableColumn<Emprestimo, Integer> colEmprestimoId;
     @FXML private TableColumn<Emprestimo, String> colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo;
     @FXML private TableColumn<Emprestimo, Double> colMultaEmprestimo;
+    private ObservableList<Emprestimo> emprestimosList;
 
     // ==================== COMPONENTES DA TELA RELATÓRIOS ====================
     @FXML private ComboBox<String> cbTipoRelatorio;
@@ -118,6 +119,7 @@ public class DashBoardController implements Initializable {
         dasboard_btn.setStyle("-fx-background-color: #ffffff33; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10px; -fx-background-radius: 5px;");
 
         carregarDadosDashboard();
+        atualizarTabelaEmprestimo();
     }
 
     private void configurarSpinner() {
@@ -146,7 +148,7 @@ public class DashBoardController implements Initializable {
 
         try {
             livroController.inicializar(
-                    txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades,
+                    txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, cbCategoria,
                     txtBuscarLivro, cbDisciplina, cbStatus, tabelaLivros,
                     colLivroId, colTitulo, colAutor, colStatus, colCategoria, colDisciplina, colUnidades,
                     btnSalvarLivro, btnAtualizarLivro, btnDeletarLivro, btnLimparLivro,
@@ -215,6 +217,7 @@ public class DashBoardController implements Initializable {
             emprestimos_form.setVisible(true);
             aplicarEstiloAtivo(emprestimos_btn);
             emprestimoController.carregarDados();
+            atualizarTabelaEmprestimo();
         } else if (btnClicado == relatorio_btn) {
             relatorio_form.setVisible(true);
             aplicarEstiloAtivo(relatorio_btn);
@@ -530,5 +533,9 @@ public class DashBoardController implements Initializable {
     @FXML
     public void buscarNaTabela() {
         relatorioController.filtrarTabela();
+    }
+
+    public void atualizarTabelaEmprestimo(){
+        tabelaEmprestimosAtivos.setItems(emprestimosList);
     }
 }

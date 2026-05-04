@@ -21,8 +21,9 @@ public class LivroController {
     private ObservableList<Disciplina> disciplinasList;
     private Livro livroSelecionado;
 
-    private TextField txtTitulo, txtAutor, txtISBN, txtAnoPublicacao, txtCategoria, txtUnidades;
+    private TextField txtTitulo, txtAutor, txtISBN, txtAnoPublicacao;
     private Spinner<Integer> spUnidades;
+    private ComboBox<String> cbCategoria;
     private TextField txtBuscarLivro;
     private ComboBox<Disciplina> cbDisciplina;
     private ComboBox<String> cbStatus;
@@ -39,8 +40,7 @@ public class LivroController {
             TextField txtAutor,
             TextField txtISBN,
             TextField txtAnoPublicacao,
-            TextField txtCategoria,
-            TextField txtUnidades,
+            ComboBox<String> cbCategoria,
             TextField txtBuscar,
             ComboBox<?> cbDisciplina,
             ComboBox<?> cbStatus,
@@ -64,8 +64,7 @@ public class LivroController {
         this.txtAutor = txtAutor;
         this.txtISBN = txtISBN;
         this.txtAnoPublicacao = txtAnoPublicacao;
-        this.txtCategoria = txtCategoria;
-        this.txtUnidades = txtUnidades;
+        this.cbCategoria = cbCategoria;
         this.txtBuscarLivro = txtBuscar;
         this.cbDisciplina = (ComboBox<Disciplina>) cbDisciplina;
         this.cbStatus = (ComboBox<String>) cbStatus;
@@ -83,7 +82,7 @@ public class LivroController {
         this.btnLimpar = btnLimpar;
         this.txtCitacao = txtCitacao;
         this.txtBibliografia = txtBibliografia;
-        this.spUnidades = this.spUnidades;
+        this.spUnidades = spUnidades;
 
         livroDAO = new LivroDAO();
         disciplinaDAO = new DisciplinaDAO();
@@ -122,8 +121,29 @@ public class LivroController {
         });
     }
 
+    private void preencherCampos(Livro l) {
+        txtTitulo.setText(l.getTitulo());
+        txtAutor.setText(l.getAutor());
+        txtISBN.setText(l.getIsbn());
+        txtAnoPublicacao.setText(String.valueOf(l.getAnoPublicacao()));
+        cbCategoria.setValue(l.getCategoria());
+        //spUnidades.getValueFactory().setValue(l.getUnidades());
+        cbStatus.setValue(l.getStatus());
+        cbDisciplina.setValue(l.getDisciplina());
+    }
+
     private void configurarCombos() {
         cbStatus.setItems(FXCollections.observableArrayList("Disponível", "Emprestado", "Manutenção"));
+
+        // Configurar o Spinner de unidades
+        if (spUnidades != null) {
+            SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 999, 1);
+            spUnidades.setValueFactory(valueFactory);
+            spUnidades.setEditable(true);  // Permitir edição manual
+            System.out.println("✅ Spinner configurado com sucesso!");
+        } else {
+            System.err.println("⚠️ spUnidades é NULL!");
+        }
     }
 
     private void carregarDisciplinas() {
@@ -201,6 +221,7 @@ public class LivroController {
     }
 
     void salvarLivro() {
+        String categoria = cbCategoria.getValue();
         if (!validarCampos()) return;
 
         try {
@@ -209,8 +230,8 @@ public class LivroController {
             livro.setAutor(txtAutor.getText().trim());
             livro.setAnoPublicacao(Integer.parseInt(txtAnoPublicacao.getText()));
             livro.setIsbn(txtISBN.getText().trim());
-            livro.setCategoria(txtCategoria.getText().trim());
-            livro.setUnidades(Integer.parseInt(txtUnidades.getText()));
+            livro.setCategoria(categoria);
+            livro.setUnidades(spUnidades.getValue());
             livro.setStatus("Disponível");
             livro.setDisciplina(cbDisciplina.getValue());
 
@@ -230,6 +251,7 @@ public class LivroController {
     }
 
     void atualizarLivro() {
+        String categoria = cbCategoria.getValue();
         if (livroSelecionado == null) {
             mostrarAviso("Selecione um livro!");
             return;
@@ -241,8 +263,8 @@ public class LivroController {
             livroSelecionado.setAutor(txtAutor.getText().trim());
             livroSelecionado.setAnoPublicacao(Integer.parseInt(txtAnoPublicacao.getText()));
             livroSelecionado.setIsbn(txtISBN.getText().trim());
-            livroSelecionado.setCategoria(txtCategoria.getText().trim());
-            livroSelecionado.setUnidades(Integer.parseInt(txtUnidades.getText()));
+            livroSelecionado.setCategoria(categoria);
+            livroSelecionado.setUnidades(spUnidades.getValue());
             livroSelecionado.setStatus(cbStatus.getValue());
             livroSelecionado.setDisciplina(cbDisciplina.getValue());
 
@@ -300,45 +322,82 @@ public class LivroController {
     }
 
     private void mostrarCitacaoBibliografia(Livro livro) {
-        StringBuilder citacao = new StringBuilder();
-        citacao.append(livro.getAutor().toUpperCase()).append(" (");
-        citacao.append(livro.getAnoPublicacao()).append("). ");
-        citacao.append(livro.getTitulo()).append(".");
-        txtCitacao.setText(citacao.toString());
-
-        StringBuilder bibliografia = new StringBuilder();
         String[] autores = livro.getAutor().split(" ");
-        if (autores.length > 1) {
-            bibliografia.append(autores[autores.length - 1]).append(", ");
-            for (int i = 0; i < autores.length - 1; i++) {
-                bibliografia.append(autores[i].charAt(0)).append(". ");
+        String sobrenome = autores[autores.length - 1];
+
+        // ========== CITAÇÃO APA (no texto) ==========
+        // Formato: (Silva, 2020) ou Silva (2020) para citação narrativa
+        StringBuilder citacaoParentetica = new StringBuilder();
+        citacaoParentetica.append("(").append(sobrenome).append(", ").append(livro.getAnoPublicacao()).append(")");
+
+        StringBuilder citacaoNarrativa = new StringBuilder();
+        citacaoNarrativa.append(sobrenome).append(" (").append(livro.getAnoPublicacao()).append(")");
+
+        // Mostrar ambas as formas de citação
+        txtCitacao.setText("Citação parentética: " + citacaoParentetica.toString() +
+                "\nCitação narrativa: " + citacaoNarrativa.toString());
+
+        // ========== REFERÊNCIA BIBLIOGRÁFICA APA 6ª edição ==========
+        // Formato completo:
+        // SOBRENOME, Iniciais. (Ano). Título do livro em itálico. (Edição). Cidade: Editora.
+        StringBuilder referencia = new StringBuilder();
+
+        // 1. Autor(es) - formato APA
+        if (autores.length == 1) {
+            // Um autor: SILVA, J.
+            referencia.append(autores[0].toUpperCase());
+            if (autores[0].length() > 1) {
+                // Adiciona iniciais se houver nome completo
+                referencia.append(", ").append(autores[0].charAt(0)).append(".");
             }
+        } else if (autores.length == 2) {
+            // Dois autores: SILVA, J., & SANTOS, M.
+            referencia.append(autores[1].toUpperCase()).append(", ");
+            referencia.append(autores[0].charAt(0)).append("., & ");
+            referencia.append(autores[1].toUpperCase()).append(", ");
+            referencia.append(autores[1].charAt(0)).append(".");
         } else {
-            bibliografia.append(livro.getAutor());
+            // Três ou mais autores: SILVA, J., et al.
+            referencia.append(autores[autores.length - 1].toUpperCase()).append(", ");
+            referencia.append(autores[autores.length - 1].charAt(0)).append("., et al.");
         }
-        bibliografia.append(". ").append(livro.getTitulo()).append(". ");
-        bibliografia.append(livro.getAnoPublicacao()).append(".");
-        txtBibliografia.setText(bibliografia.toString());
+
+        referencia.append(" (").append(livro.getAnoPublicacao()).append("). ");
+
+        // 2. Título do livro (em itálico) - só primeira letra maiúscula
+        String tituloAPA = livro.getTitulo().substring(0, 1).toUpperCase() +
+                livro.getTitulo().substring(1).toLowerCase();
+        referencia.append("*").append(tituloAPA).append("*");
+
+        // 3. Categoria/Edição (se houver)
+        if (livro.getCategoria() != null && !livro.getCategoria().isEmpty()) {
+            referencia.append(" (").append(livro.getCategoria().toLowerCase()).append(" ed.)");
+        }
+
+        referencia.append(". ");
+
+        // 4. Disciplina (como coleção ou área)
+        if (livro.getDisciplina() != null && livro.getDisciplina().getNomeDisciplina() != null) {
+            referencia.append(livro.getDisciplina().getNomeDisciplina()).append(". ");
+        }
+
+        // 5. ISBN
+        if (livro.getIsbn() != null && !livro.getIsbn().isEmpty()) {
+            referencia.append("ISBN ").append(livro.getIsbn()).append(". ");
+        }
+
+        txtBibliografia.setText(referencia.toString());
     }
 
-    private void preencherCampos(Livro l) {
-        txtTitulo.setText(l.getTitulo());
-        txtAutor.setText(l.getAutor());
-        txtISBN.setText(l.getIsbn());
-        txtAnoPublicacao.setText(String.valueOf(l.getAnoPublicacao()));
-        txtCategoria.setText(l.getCategoria());
-        txtUnidades.setText(String.valueOf(l.getUnidades()));
-        cbStatus.setValue(l.getStatus());
-        cbDisciplina.setValue(l.getDisciplina());
-    }
+
 
     public void limparCampos() {
         txtTitulo.clear();
         txtAutor.clear();
         txtISBN.clear();
         txtAnoPublicacao.clear();
-        txtCategoria.clear();
-        txtUnidades.clear();
+        cbCategoria.setValue(null);
+        spUnidades.getValueFactory().setValue(0);
         cbStatus.setValue(null);
         cbDisciplina.setValue(null);
         txtCitacao.clear();
@@ -356,7 +415,7 @@ public class LivroController {
             mostrarAviso("Preencha o autor!");
             return false;
         }
-        if (txtUnidades.getText().trim().isEmpty()) {
+        if (spUnidades.getValue()== null) {
             mostrarAviso("Preencha as unidades!");
             return false;
         }

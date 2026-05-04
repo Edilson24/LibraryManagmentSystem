@@ -18,53 +18,45 @@ public class EmprestimoDAO {
 
     // CREATE - Realizar empréstimo
     public void inserir(Emprestimo emprestimo) throws SQLException {
-        String sql = "INSERT INTO emprestimos (fk_estudante, fk_livro, data_saida, data_prevista_devolucao, valor_multa, pago) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+        String updateUnidadesSql = "UPDATE livros SET unidades = unidades - 1 WHERE id_livro = ? AND unidades > 0";
+        String insertSql = "INSERT INTO emprestimos (fk_estudante, fk_livro, data_saida, data_prevista_devolucao, valor_multa, pago) VALUES (?, ?, ?, ?, ?, ?)";
 
-        Connection conn = null;
-        PreparedStatement stmt = null;
-
-        try {
-            conn = Conexao.obterConexao();
-            conn.setAutoCommit(false); // Iniciar transação
-
-            stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-
-            stmt.setInt(1, emprestimo.getEstudante().getId());
-            stmt.setInt(2, emprestimo.getLivro().getIdLivro());
-            stmt.setTimestamp(3, Timestamp.valueOf(emprestimo.getDataSaida()));
-            stmt.setDate(4, Date.valueOf(emprestimo.getDataPrevistaDevolucao()));
-            stmt.setDouble(5, emprestimo.getValorMulta());
-            stmt.setBoolean(6, emprestimo.isPago());
-
-            stmt.executeUpdate();
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    emprestimo.setIdEmprestimo(rs.getInt(1));
+        try (Connection conn = Conexao.obterConexao()) {
+            conn.setAutoCommit(false);
+            try (PreparedStatement updateStmt = conn.prepareStatement(updateUnidadesSql)) {
+                updateStmt.setInt(1, emprestimo.getLivro().getIdLivro());
+                int updated = updateStmt.executeUpdate();
+                if (updated == 0) {
+                    conn.rollback();
+                    throw new SQLException("Não há unidades disponíveis para o livro id=" + emprestimo.getLivro().getIdLivro());
                 }
             }
 
-            // Atualizar unidades do livro
-            Livro livro = emprestimo.getLivro();
-            livro.setUnidades(livro.getUnidades() - 1);
-            livroDAO.atualizarUnidades(livro.getIdLivro(), livro.getUnidades());
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS)) {
+                insertStmt.setInt(1, emprestimo.getEstudante().getId());
+                insertStmt.setInt(2, emprestimo.getLivro().getIdLivro());
+                insertStmt.setTimestamp(3, emprestimo.getDataSaida() == null ? null : Timestamp.valueOf(emprestimo.getDataSaida()));
+                insertStmt.setDate(4, Date.valueOf(emprestimo.getDataPrevistaDevolucao()));
+                insertStmt.setDouble(5, emprestimo.getValorMulta());
+                insertStmt.setBoolean(6, emprestimo.isPago());
 
-            conn.commit(); // Confirmar transação
+                int rows = insertStmt.executeUpdate();
+                if (rows == 0) {
+                    conn.rollback();
+                    throw new SQLException("Falha ao inserir emprestimo.");
+                }
 
-        } catch (SQLException e) {
-            if (conn != null) {
-                conn.rollback(); // Desfazer em caso de erro
+                try (ResultSet rs = insertStmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        emprestimo.setIdEmprestimo(rs.getInt(1));
+                    }
+                }
             }
-            throw e;
-        } finally {
-            if (stmt != null) stmt.close();
-            if (conn != null) {
-                conn.setAutoCommit(true);
-                conn.close();
-            }
+
+            conn.commit();
         }
     }
+
 
     // CREATE - Registrar devolução
     public void registrarDevolucao(int idEmprestimo, LocalDate dataDevolucao, double multaCalculada) throws SQLException {
