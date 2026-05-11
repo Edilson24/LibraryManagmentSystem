@@ -79,6 +79,10 @@ public class LoginController implements Initializable {
                     if (usuarioAutenticado != null) {
                         usuarioLogado = usuarioAutenticado;
                         abrirDashboard(usuarioAutenticado);
+
+                        // Fecha a janela de login
+                        Stage loginStage = (Stage) main_form.getScene().getWindow();
+                        loginStage.close();
                     } else {
                         mostrarAlerta("Erro de autenticação",
                                 "Usuário ou senha incorretos!");
@@ -101,12 +105,14 @@ public class LoginController implements Initializable {
     private void abrirDashboard(Usuario usuario) {
         try {
             // Carregar a tela principal (Dashboard)
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/LibraryManagmentSystem/view/dashboard/Dashboard.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/org/example/librarymanagmentsystem/view/dashboard/Dashboard.fxml"));
             Parent root = loader.load();
 
             // Configurar a nova cena
             Stage stage = new Stage();
             Scene scene = new Scene(root);
+
+            stage.initStyle(StageStyle.TRANSPARENT);
 
             // Obter o controller do dashboard
             DashBoardController dashboardController = loader.getController();
@@ -114,17 +120,17 @@ public class LoginController implements Initializable {
             // Passar o usuário logado para o dashboard
             dashboardController.setUsuarioLogado(usuario);
 
-
-
             // Carregar CSS
-            scene.getStylesheets().add(getClass().getResource("/org/example/LibraryManagmentSystem/css/dashboardStyle.css").toExternalForm());
+            scene.getStylesheets().add(getClass().getResource("/org/example/libraryManagmentSystem/css/dashboardStyle.css").toExternalForm());
 
             stage.setScene(scene);
+            stage.initStyle(StageStyle.UNDECORATED);
             stage.setTitle("SISMON - Sistema de Gestão Bibliotecária");
-            stage.setMaximized(true);
+            //stage.setMaximized(true);
+            stage.setResizable(false);
             stage.show();
 
-            stage.initStyle(StageStyle.TRANSPARENT);
+
 
             root.setOnMousePressed((MouseEvent event) ->{
                 x = event.getSceneX();
