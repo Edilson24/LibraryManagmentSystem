@@ -8,17 +8,27 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.FileChooser;
 import org.example.librarymanagmentsystem.daos.EstudanteDAO;
+import org.example.librarymanagmentsystem.daos.UsuarioDAO;
 import org.example.librarymanagmentsystem.entidades.*;
 import org.example.librarymanagmentsystem.services.DashboardService;
 import org.example.librarymanagmentsystem.controller.LivroController;
 
+import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
+
 public class DashBoardController implements Initializable {
+
+    private Usuario usuarioLogado;
 
     private EstudanteDAO estudanteDAO;
     private Estudante estudanteSelecionado;
@@ -47,7 +57,8 @@ public class DashBoardController implements Initializable {
     @FXML private Label relatorio_btn;
 
     // ==================== COMPONENTES DA TELA ESTUDANTES ====================
-    @FXML private TextField txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
+    @FXML private TextField txtNome, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
+    @FXML private ComboBox<String> cbCursoEstudante;
     @FXML private TextField txtBuscarEstudante;
     @FXML private TableView<Estudante> tabelaEstudantes;
     @FXML private TableColumn<Estudante, Integer> colId;
@@ -136,7 +147,7 @@ public class DashBoardController implements Initializable {
         // Depois inicializar cada um
         try {
             estudanteController.inicializar(
-                    txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino,
+                    txtNome, cbCursoEstudante, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino,
                     txtBuscarEstudante, tabelaEstudantes, colId, colNome, colCurso, colDepartamento, colCodigo, colCartaoRFID,
                     btnSalvar, btnAtualizar, btnDeletar, btnLimpar
             );
@@ -338,9 +349,9 @@ public class DashBoardController implements Initializable {
             txtNome.requestFocus();
             return false;
         }
-        if (txtCurso.getText().trim().isEmpty()) {
+        if (cbCursoEstudante.getValue() == null) {
             mostrarAviso("Preencha o curso!");
-            txtCurso.requestFocus();
+            cbCursoEstudante.requestFocus();
             return false;
         }
         if (txtCodigoEstudante.getText().trim().isEmpty()) {
@@ -363,7 +374,7 @@ public class DashBoardController implements Initializable {
 
     public void limparCampos() {
         txtNome.clear();
-        txtCurso.clear();
+        cbCursoEstudante.getSelectionModel().clearSelection();
         txtDepartamento.clear();
         txtIdade.clear();
         txtCodigoEstudante.clear();
@@ -396,7 +407,7 @@ public class DashBoardController implements Initializable {
                     txtNome.getText().trim(),
                     Integer.parseInt(txtIdade.getText()),
                     txtDepartamento.getText().trim(),
-                    txtCurso.getText().trim(),
+                    cbCursoEstudante.getValue(),
                     txtCartaoArduino.getText().trim(),
                     txtCodigoEstudante.getText().trim()
             );
@@ -427,7 +438,7 @@ public class DashBoardController implements Initializable {
 
         try {
             estudanteSelecionado.setNome(txtNome.getText().trim());
-            estudanteSelecionado.setCurso(txtCurso.getText().trim());
+            estudanteSelecionado.setCurso(cbCursoEstudante.getValue());
             estudanteSelecionado.setDepartamento(txtDepartamento.getText().trim());
             estudanteSelecionado.setIdade(Integer.parseInt(txtIdade.getText()));
             estudanteSelecionado.setCodigoEstudante(txtCodigoEstudante.getText().trim());
@@ -538,4 +549,221 @@ public class DashBoardController implements Initializable {
     public void atualizarTabelaEmprestimo(){
         tabelaEmprestimosAtivos.setItems(emprestimosList);
     }
+
+    //MTODOS PARA O LOGIN
+    public void setUsuarioLogado(Usuario usuario) {
+        this.usuarioLogado = usuario;
+        atualizarInterfaceUsuario();
+    }
+
+    private void atualizarInterfaceUsuario() {
+        if (usuarioLogado != null) {
+            // Atualizar o nome do usuário na tela
+            Label lblNomeUsuario = (Label) dashboard_form.lookup("#lblNomeUsuario");
+            if (lblNomeUsuario != null) {
+                lblNomeUsuario.setText(usuarioLogado.getNome());
+            }
+
+            // Atualizar o tipo/permissão
+            Label lblTipoUsuario = (Label) dashboard_form.lookup("#lblTipoUsuario");
+            if (lblTipoUsuario != null) {
+                lblTipoUsuario.setText(usuarioLogado.getTipo());
+
+                // Aplicar estilo baseado no tipo
+                if (usuarioLogado.isAdministrador()) {
+                    lblTipoUsuario.setStyle("-fx-text-fill: #ffd700; -fx-font-weight: bold;");
+                } else {
+                    lblTipoUsuario.setStyle("-fx-text-fill: #90caf9;");
+                }
+            }
+
+            // Carregar foto do usuário no Circle
+            carregarFotoUsuario();
+
+            // Aplicar restrições de acesso baseadas no tipo
+            aplicarRestricoesAcesso();
+        }
+    }
+
+    private void carregarFotoUsuario() {
+        // Buscar o Circle do FXML
+        Circle fotoPerfil = (Circle) dashboard_form.lookup("#fotoPerfil");
+
+        if (fotoPerfil != null && usuarioLogado != null) {
+            String caminhoFoto = usuarioLogado.getFoto();
+
+            if (caminhoFoto != null && !caminhoFoto.isEmpty()) {
+                try {
+                    Image image;
+
+                    // Verificar se o caminho é uma URL ou arquivo local
+                    if (caminhoFoto.startsWith("http")) {
+                        // Imagem da internet
+                        image = new Image(caminhoFoto, true);
+                    } else {
+                        // Imagem local - tenta diferentes formas de carregar
+                        image = carregarImagemLocal(caminhoFoto);
+                    }
+
+                    // Aplicar a imagem ao Circle
+                    if (!image.isError()) {
+                        fotoPerfil.setFill(new ImagePattern(image));
+                        System.out.println("✅ Foto carregada com sucesso: " + caminhoFoto);
+                    } else {
+                        usarImagemPadrao(fotoPerfil);
+                        System.err.println("⚠️ Erro ao carregar foto: " + caminhoFoto);
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    usarImagemPadrao(fotoPerfil);
+                }
+            } else {
+                // Usuário não tem foto, usar imagem padrão
+                usarImagemPadrao(fotoPerfil);
+            }
+        }
+    }
+
+    private Image carregarImagemLocal(String caminhoFoto) {
+        // Tenta carregar de diferentes locais
+
+        // 1. Tenta como recurso do classpath
+        java.net.URL resourceUrl = getClass().getResource(caminhoFoto);
+        if (resourceUrl != null) {
+            return new Image(resourceUrl.toExternalForm());
+        }
+
+        // 2. Tenta como arquivo do sistema
+        java.io.File file = new java.io.File(caminhoFoto);
+        if (file.exists()) {
+            return new Image(file.toURI().toString());
+        }
+
+        // 3. Tenta como caminho relativo ao projeto
+        String projectPath = System.getProperty("user.dir");
+        java.io.File projectFile = new java.io.File(projectPath + caminhoFoto);
+        if (projectFile.exists()) {
+            return new Image(projectFile.toURI().toString());
+        }
+
+        // 4. Tenta como caminho da classe
+        resourceUrl = getClass().getResource("/" + caminhoFoto);
+        if (resourceUrl != null) {
+            return new Image(resourceUrl.toExternalForm());
+        }
+
+        // Se não encontrou, retorna imagem de erro
+        return new Image(getClass().getResourceAsStream("/imagens/default-user.png"));
+    }
+
+    private void usarImagemPadrao(Circle circle) {
+        try {
+            // Tenta carregar imagem padrão
+            java.net.URL defaultImageUrl = getClass().getResource("/imagens/default-user.png");
+            if (defaultImageUrl != null) {
+                Image defaultImage = new Image(defaultImageUrl.toExternalForm());
+                circle.setFill(new ImagePattern(defaultImage));
+            } else {
+                // Se não tiver imagem padrão, usa cor sólida com iniciais
+                circle.setFill(javafx.scene.paint.Color.web("#1b5e90"));
+
+                // Opcional: Adicionar texto com iniciais
+                String iniciais = obterIniciais(usuarioLogado.getNome());
+                Label lblIniciais = new Label(iniciais);
+                lblIniciais.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14px;");
+                lblIniciais.setLayoutX(circle.getLayoutX() - 10);
+                lblIniciais.setLayoutY(circle.getLayoutY() - 8);
+
+                // Adicionar ao AnchorPane (isso pode precisar de ajuste)
+                AnchorPane parent = (AnchorPane) circle.getParent();
+                if (parent != null && !parent.getChildren().contains(lblIniciais)) {
+                    parent.getChildren().add(lblIniciais);
+                }
+            }
+        } catch (Exception e) {
+            // Fallback: cor sólida
+            circle.setFill(javafx.scene.paint.Color.web("#1b5e90"));
+        }
+    }
+
+    private String obterIniciais(String nome) {
+        if (nome == null || nome.isEmpty()) return "?";
+        String[] partes = nome.trim().split(" ");
+        if (partes.length == 1) {
+            return String.valueOf(partes[0].charAt(0)).toUpperCase();
+        }
+        return String.valueOf(partes[0].charAt(0)).toUpperCase() +
+                String.valueOf(partes[partes.length - 1].charAt(0)).toUpperCase();
+    }
+
+    private void aplicarRestricoesAcesso() {
+        // Se for funcionário, desabilitar algumas funcionalidades
+        if (!usuarioLogado.isAdministrador()) {
+            // Desabilitar botões de deletar
+            if (btnDeletar != null) btnDeletar.setDisable(true);
+            if (btnDeletarLivro != null) btnDeletarLivro.setDisable(true);
+
+            // Desabilitar botões de cadastro (apenas leitura)
+            if (btnSalvar != null) btnSalvar.setDisable(true);
+            if (btnSalvarLivro != null) btnSalvarLivro.setDisable(true);
+
+            // Mostrar alerta de acesso limitado
+            mostrarInfo("Acesso Limitado",
+                    "Você está logado como FUNCIONÁRIO.\n" +
+                            "Você pode apenas visualizar e realizar empréstimos/devoluções.\n" +
+                            "Para cadastros e exclusões, acesse como Administrador.");
+        }
+    }
+
+    private void mostrarInfo(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
+    }
+
+
+    @FXML
+    private void alterarFotoPerfil() {
+        if (!usuarioLogado.isAdministrador()) {
+            mostrarInfo("Acesso negado", "Apenas administradores podem alterar a foto de perfil.");
+            return;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Selecionar Foto de Perfil");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Imagens", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
+
+        File arquivo = fileChooser.showOpenDialog(null);
+        if (arquivo != null) {
+            // Copiar arquivo para a pasta do projeto
+            String destino = "src/main/resources/imagens/usuarios/" +
+                    usuarioLogado.getUsuario() + "_" + System.currentTimeMillis() + ".jpg";
+
+            try {
+                java.nio.file.Files.copy(arquivo.toPath(),
+                        new java.io.File(destino).toPath(),
+                        java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+                // Atualizar caminho no banco
+                usuarioLogado.setFoto(destino);
+                new UsuarioDAO().atualizar(usuarioLogado);
+
+                // Recarregar foto na tela
+                carregarFotoUsuario();
+
+                mostrarInfo("Foto atualizada", "Sua foto de perfil foi atualizada com sucesso!");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                mostrarInfo("Erro", "Não foi possível salvar a foto: " + e.getMessage());
+            }
+        }
+    }
+
+
 }

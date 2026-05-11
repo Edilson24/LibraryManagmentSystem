@@ -53,3 +53,22 @@ CREATE TABLE `emprestimos` (
   CONSTRAINT `emprestimos_ibfk_2` FOREIGN KEY (`fk_livro`) REFERENCES `livros` (`id_livro`) ON DELETE CASCADE
 );
 
+-- A tabela já tem o campo foto, mas vamos garantir
+CREATE TABLE `usuarios` (
+  `id_usuario` int NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+  `usuario` varchar(50) NOT NULL,
+  `senha` varchar(255) NOT NULL,
+  `tipo` enum('Administrador','Funcionario') DEFAULT 'Funcionario',
+  `foto` varchar(500) DEFAULT NULL,  -- ← Campo para armazenar o caminho da foto
+  `ativo` tinyint(1) DEFAULT '1',
+  `data_cadastro` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_usuario`),
+  UNIQUE KEY `usuario` (`usuario`)
+);
+
+-- Inserir usuários com foto (opcional - pode ser NULL inicialmente)
+INSERT INTO `usuarios` (`nome`, `usuario`, `senha`, `tipo`, `foto`) VALUES
+('Edilson Hilário', 'admin', 'admin123', 'Administrador', '/imagens/usuarios/admin.jpg'),
+('Funcionário Teste', 'funcionario', 'func123', 'Funcionario', '/imagens/usuarios/funcionario.jpg');
+

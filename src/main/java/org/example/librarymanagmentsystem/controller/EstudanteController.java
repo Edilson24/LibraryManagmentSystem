@@ -3,6 +3,7 @@ package org.example.librarymanagmentsystem.controller;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.example.librarymanagmentsystem.daos.EstudanteDAO;
@@ -19,7 +20,8 @@ public class EstudanteController {
     private Estudante estudanteSelecionado;
 
     // Componentes da interface
-    private TextField txtNome, txtCurso, txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
+    private TextField txtNome,  txtDepartamento, txtIdade, txtCodigoEstudante, txtCartaoArduino;
+    @FXML private ComboBox <String> cbCursoEstudante;
     private TextField txtBuscar;
     private TableView<Estudante> tabelaEstudantes;
     private TableColumn<Estudante, Integer> colId;
@@ -29,7 +31,7 @@ public class EstudanteController {
     @SuppressWarnings("unchecked")
     public void inicializar(
             TextField txtNome,
-            TextField txtCurso,
+            ComboBox cbCursoEstudante,
             TextField txtDepartamento,
             TextField txtIdade,
             TextField txtCodigoEstudante,
@@ -48,7 +50,7 @@ public class EstudanteController {
             Button btnLimpar) {
 
         this.txtNome = txtNome;
-        this.txtCurso = txtCurso;
+        this.cbCursoEstudante = cbCursoEstudante;
         this.txtDepartamento = txtDepartamento;
         this.txtIdade = txtIdade;
         this.txtCodigoEstudante = txtCodigoEstudante;
@@ -108,6 +110,24 @@ public class EstudanteController {
     }
 
     public void carregarDados() {
+        if (cbCursoEstudante != null) {
+            cbCursoEstudante.setItems(FXCollections.observableArrayList("Gestão",
+                    "Informática",
+                    "Administração",
+                    "Contabilidade",
+                    "Medicina",
+                    "Direito",
+                    "Arquitetura",
+                    "Recursos Humanos",
+                    "GADEC",
+                    "Gestão de Empresas",
+                    "Gestão de Transportes e Logística"));
+
+            System.out.println("✅ cbCursoEstudante configurado");
+        } else {
+            System.err.println("⚠️ ATENÇÃO: cbCurso é NULL! Verifique o fx:id no FXML.");
+        }
+
         new Thread(() -> {
             try {
                 List<Estudante> estudantes = estudanteDAO.listarTodos();
@@ -130,7 +150,7 @@ public class EstudanteController {
                     txtNome.getText().trim(),
                     Integer.parseInt(txtIdade.getText()),
                     txtDepartamento.getText().trim(),
-                    txtCurso.getText().trim(),
+                    cbCursoEstudante.getValue(),
                     txtCartaoArduino.getText().trim(),
                     txtCodigoEstudante.getText().trim()
             );
@@ -160,7 +180,7 @@ public class EstudanteController {
 
         try {
             estudanteSelecionado.setNome(txtNome.getText().trim());
-            estudanteSelecionado.setCurso(txtCurso.getText().trim());
+            estudanteSelecionado.setCurso(cbCursoEstudante.getValue());
             estudanteSelecionado.setDepartamento(txtDepartamento.getText().trim());
             estudanteSelecionado.setIdade(Integer.parseInt(txtIdade.getText()));
             estudanteSelecionado.setCodigoEstudante(txtCodigoEstudante.getText().trim());
@@ -224,7 +244,7 @@ public class EstudanteController {
 
     private void preencherCampos(Estudante e) {
         txtNome.setText(e.getNome());
-        txtCurso.setText(e.getCurso());
+        cbCursoEstudante.setValue(e.getCurso());
         txtDepartamento.setText(e.getDepartamento());
         txtIdade.setText(String.valueOf(e.getIdade()));
         txtCodigoEstudante.setText(e.getCodigoEstudante());
@@ -233,7 +253,7 @@ public class EstudanteController {
 
     public void limparCampos() {
         txtNome.clear();
-        txtCurso.clear();
+        cbCursoEstudante.getSelectionModel().clearSelection();
         txtDepartamento.clear();
         txtIdade.clear();
         txtCodigoEstudante.clear();
@@ -248,9 +268,9 @@ public class EstudanteController {
             txtNome.requestFocus();
             return false;
         }
-        if (txtCurso.getText().trim().isEmpty()) {
+        if (cbCursoEstudante.getValue() == null ) {
             mostrarAviso("Preencha o curso!");
-            txtCurso.requestFocus();
+            cbCursoEstudante.requestFocus();
             return false;
         }
         if (txtCodigoEstudante.getText().trim().isEmpty()) {

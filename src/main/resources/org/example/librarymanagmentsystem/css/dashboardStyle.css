@@ -281,7 +281,7 @@
     -fx-cursor: hand;
 }
 
-.list-view-modern .list-cell:selected {
+.list-view-modern .list-cell:selected{
     -fx-background-color: #1b5e90;
     -fx-text-fill: white;
 }

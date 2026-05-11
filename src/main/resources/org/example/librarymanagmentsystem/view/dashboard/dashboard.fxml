@@ -85,7 +85,7 @@
             </AnchorPane>
 
             <!-- TELA DE GESTÃO DE ESTUDANTE -->
-            <AnchorPane fx:id="telaEstudante_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" visible="false" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+            <AnchorPane fx:id="telaEstudante_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
                <children>
                   <Label layoutX="27.0" layoutY="10.0" text="Gestão de Estudantes" textFill="#1b5e90">
                      <font><Font name="Arial Black" size="26.0" /></font>
@@ -101,13 +101,13 @@
                         <TextField fx:id="txtNome" layoutX="20.0" layoutY="75.0" prefHeight="35.0" prefWidth="410.0" promptText="Digite o nome completo" styleClass="textfield" />
 
                         <Label layoutX="20.0" layoutY="125.0" text="Curso:" />
-                        <TextField fx:id="txtCurso" layoutX="20.0" layoutY="145.0" prefHeight="35.0" prefWidth="195.0" promptText="Curso" styleClass="textfield" />
+                        <ComboBox fx:id="cbCursoEstudante" layoutX="19.0" layoutY="145.0" prefHeight="35.0" prefWidth="195.0" promptText="Selecione o curso" AnchorPane.leftAnchor="19.0" />
 
                         <Label layoutX="235.0" layoutY="125.0" text="Departamento:" />
                         <TextField fx:id="txtDepartamento" layoutX="235.0" layoutY="145.0" prefHeight="35.0" prefWidth="195.0" promptText="Departamento" styleClass="textfield" />
 
                         <Label layoutX="20.0" layoutY="195.0" text="Idade:" />
-                        <TextField fx:id="txtIdade" layoutX="20.0" layoutY="215.0" prefHeight="35.0" prefWidth="195.0" promptText="Idade" styleClass="textfield" />
+                        <TextField fx:id="txtIdade" layoutX="20.0" layoutY="215.0" prefHeight="35.0" prefWidth="195.0" promptText="Idade" styleClass="textfield" AnchorPane.leftAnchor="20.0" />
 
                         <Label layoutX="235.0" layoutY="195.0" text="Código Estudante:" />
                         <TextField fx:id="txtCodigoEstudante" layoutX="235.0" layoutY="215.0" prefHeight="35.0" prefWidth="195.0" promptText="Matrícula/RA" styleClass="textfield" />
@@ -119,6 +119,7 @@
                         <Button fx:id="btnAtualizar" layoutX="120.0" layoutY="340.0" onAction="#atualizarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-warning" text="Atualizar" />
                         <Button fx:id="btnDeletar" layoutX="230.0" layoutY="340.0" onAction="#deletarEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-danger" text="Deletar" />
                         <Button fx:id="btnLimpar" layoutX="340.0" layoutY="340.0" onAction="#limparCamposEstudante" prefHeight="35.0" prefWidth="100.0" styleClass="btn-secondary" text="Limpar" />
+
                      </children>
                   </AnchorPane>
 
@@ -147,7 +148,7 @@
             </AnchorPane>
 
             <!-- TELA DE GESTAO DE LIVROS -->
-            <AnchorPane fx:id="livros_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
+            <AnchorPane fx:id="livros_form" layoutX="218.0" layoutY="41.0" prefHeight="724.0" prefWidth="1112.0" styleClass="tela" stylesheets="@../../css/dashboardStyle.css" visible="false" AnchorPane.rightAnchor="11.0" AnchorPane.topAnchor="31.0">
                <children>
                   <Label layoutX="27.0" layoutY="10.0" text="Gestão de Livros" textFill="#1b5e90">
                      <font><Font name="Arial Black" size="26.0" /></font>
@@ -323,10 +324,10 @@
                         <ComboBox fx:id="cbTipoRelatorio" layoutX="20.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="Selecione o tipo de relatório" />
 
                         <Label fx:id="lblFiltroDataInicio" layoutX="240.0" layoutY="55.0" text="Data Início:" visible="true" />
-                        <DatePicker fx:id="dpDataInicio" layoutX="240.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="dd/MM/yyyy" visible="true" />
+                        <DatePicker fx:id="dpDataInicio" layoutX="240.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="dd/MM/yyyy" visible="false" />
 
                         <Label fx:id="lblFiltroDataFim" layoutX="460.0" layoutY="55.0" text="Data Fim:" visible="true" />
-                        <DatePicker fx:id="dpDataFim" layoutX="458.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="dd/MM/yyyy" visible="true" />
+                        <DatePicker fx:id="dpDataFim" layoutX="458.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="dd/MM/yyyy" visible="false" />
 
                         <!-- Status (para empréstimos) - ADICIONE fx:id="cbStatusEmprestimo" -->
                         <Label fx:id="lblStatus" layoutX="720.0" layoutY="55.0" text="Status:" visible="false" />
@@ -342,7 +343,7 @@
 
                         <!-- Curso (para estudantes) - ADICIONE fx:id="cbCurso" -->
                         <Label fx:id="lblCurso" layoutX="300.0" layoutY="55.0" text="Curso:" visible="false" />
-                        <ComboBox fx:id="cbCurso" layoutX="300.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="Todos os cursos" visible="false">
+                        <ComboBox fx:id="cbCurso" layoutX="300.0" layoutY="75.0" prefHeight="35.0" prefWidth="200.0" promptText="Todos os cursos">
                            <items>
                               <FXCollections fx:factory="observableArrayList">
                                  <String fx:value="Todos" />

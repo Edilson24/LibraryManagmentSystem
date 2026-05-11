@@ -148,12 +148,14 @@ public class RelatorioController {
         }
 
         if (cbCurso != null) {
-            cbCurso.setItems(FXCollections.observableArrayList("Todos", "Computação", "Engenharia", "Administração", "Direito"));
+            cbCurso.setItems(FXCollections.observableArrayList("Todos", "Gestão", "Informática", "Administração", "Contabilidade", "Medicina", "Direito", "Arquitetura"));
             cbCurso.setValue("Todos");
             System.out.println("✅ cbCurso configurado");
         } else {
             System.err.println("⚠️ ATENÇÃO: cbCurso é NULL! Verifique o fx:id no FXML.");
         }
+
+
 
         // Esconder filtros inicialmente
         if (lblFiltroDataInicio != null) lblFiltroDataInicio.setVisible(false);
