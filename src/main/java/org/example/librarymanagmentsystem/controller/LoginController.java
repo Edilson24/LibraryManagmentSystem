@@ -130,8 +130,6 @@ public class LoginController implements Initializable {
             stage.setResizable(false);
             stage.show();
 
-
-
             root.setOnMousePressed((MouseEvent event) ->{
                 x = event.getSceneX();
                 y = event.getSceneY();

@@ -1,5 +1,7 @@
 create database sismon_db;
 
+use sismon_db;
+
 CREATE TABLE `disciplinas` (
   `id_disciplina` int NOT NULL AUTO_INCREMENT,
   `nome_disciplina` varchar(50) NOT NULL,
@@ -54,6 +56,7 @@ CREATE TABLE `emprestimos` (
 );
 
 -- A tabela já tem o campo foto, mas vamos garantir
+
 CREATE TABLE `usuarios` (
   `id_usuario` int NOT NULL AUTO_INCREMENT,
   `nome` varchar(100) NOT NULL,

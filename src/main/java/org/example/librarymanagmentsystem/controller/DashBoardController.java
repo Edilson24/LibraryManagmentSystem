@@ -4,11 +4,17 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import org.example.librarymanagmentsystem.aplication.HelloApplication;
 import org.example.librarymanagmentsystem.daos.EstudanteDAO;
 import org.example.librarymanagmentsystem.daos.UsuarioDAO;
 import org.example.librarymanagmentsystem.entidades.*;
@@ -16,6 +22,7 @@ import org.example.librarymanagmentsystem.services.DashboardService;
 import org.example.librarymanagmentsystem.controller.LivroController;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
@@ -29,6 +36,7 @@ import javafx.scene.shape.Circle;
 public class DashBoardController implements Initializable {
 
     private Usuario usuarioLogado;
+    @FXML private Button close;
 
     private EstudanteDAO estudanteDAO;
     private Estudante estudanteSelecionado;
@@ -763,6 +771,51 @@ public class DashBoardController implements Initializable {
                 mostrarInfo("Erro", "Não foi possível salvar a foto: " + e.getMessage());
             }
         }
+    }
+
+    public void close(){
+        Stage stage = (Stage) close.getScene().getWindow();
+        stage.close();
+        Platform.exit();
+    }
+
+    private double x = 0;
+    private double y = 0;
+
+    public void logout() throws IOException {
+        FXMLLoader fxmlLoader = new FXMLLoader(HelloApplication.class.getResource("/org/example/librarymanagmentsystem/view/login/login.fxml"));
+        Parent root = fxmlLoader.load();
+        Scene scene = new Scene(root);
+
+        Stage stage = new Stage();
+
+        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.setTitle("CANDIDATURAS!");
+
+
+        root.setOnMousePressed((MouseEvent event) ->{
+            x = event.getSceneX();
+            y = event.getSceneY();
+        });
+
+        root.setOnMouseDragged((MouseEvent event) ->{
+            stage.setX(event.getScreenX() - x);
+            stage.setY(event.getScreenY() - y);
+
+            stage.setOpacity(.8);
+        });
+
+        root.setOnMouseReleased((MouseEvent event) ->{
+            stage.setOpacity(1);
+        });
+
+        stage.setScene(scene);
+        stage.show();
+
+
+        // Fecha a janela de dashboards
+        Stage loginStage = (Stage) dashboard_form.getScene().getWindow();
+        loginStage.close();
     }
 
 

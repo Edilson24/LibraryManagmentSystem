@@ -278,9 +278,7 @@ public class UsuarioController implements Initializable {
     }
 
     private int getUsuarioLogadoId() {
-        // Aqui você deve retornar o ID do usuário logado atualmente
-        // Pode ser armazenado em uma variável estática ou passado via controller
-        return 1; // Placeholder - ajustar conforme sua implementação
+        return 1;
     }
 
     private void mostrarSucesso(String msg) {
@@ -305,5 +303,9 @@ public class UsuarioController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(msg);
         alert.showAndWait();
+    }
+
+    public void inicializar(){
+
     }
 }
