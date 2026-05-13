@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório SQL - SISMON</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #1b5e90;
+            text-align: center;
+            border-bottom: 3px solid #1b5e90;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #1b5e90;
+            background-color: #e3f2fd;
+            padding: 10px;
+            border-left: 5px solid #1b5e90;
+            margin-top: 30px;
+        }
+        h3 {
+            color: #0d3d5e;
+            margin-top: 20px;
+        }
+        .sql-block {
+            background-color: #f5f5f5;
+            border-left: 4px solid #4caf50;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .descricao {
+            background-color: #fff3e0;
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #ff9800;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #1b5e90;
+            color: white;
+        }
+        .badge {
+            background-color: #4caf50;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+            font-size: 11px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<h1>📊 SISMON - Sistema de Gestão Bibliotecária</h1>
+<h2>Análise Completa dos Métodos SQL</h2>
+
+<p><strong>Data:</strong> Maio de 2026</p>
+<p><strong>Disciplina:</strong> Prática de Base de Dados</p>
+
+<hr>
+
+<!-- ============================================ -->
+<h2>1. CONSULTAS (SELECT)</h2>
+<!-- ============================================ -->
+
+<h3>1.1 Autenticação de Usuário</h3>
+<div class="sql-block">
+    SELECT * FROM usuarios WHERE usuario = ? AND senha = ? AND ativo = 1
+</div>
+<div class="descricao">
+    <strong>📌 Objetivo:</strong> Verificar credenciais de login<br>
+    <strong>📍 Localização:</strong> UsuarioDAO.autenticar()<br>
+    <strong>🖥️ Tela:</strong> Tela de Login
+</div>
+
+<h3>1.2 Dashboard - Cards Estatísticos</h3>
+
+<h4>Total de Estudantes</h4>
+<div class="sql-block">
+    SELECT COUNT(*) as total FROM estudantes
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Contar número total de estudantes cadastrados<br>
+    <strong>Localização:</strong> DashboardService.getTotalEstudantes()<br>
+    <strong>Tela:</strong> Dashboard - Card "Total de estudantes"
+</div>
+
+<h4>Livros Disponíveis</h4>
+<div class="sql-block">
+    SELECT SUM(unidades) as total FROM livros WHERE status = 'Disponível' AND unidades > 0
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Somar unidades de livros disponíveis<br>
+    <strong>Localização:</strong> DashboardService.getLivrosDisponiveis()<br>
+    <strong>Tela:</strong> Dashboard - Card "Livros Disponíveis"
+</div>
+
+<h4>Empréstimos Ativos</h4>
+<div class="sql-block">
+    SELECT COUNT(*) as total FROM emprestimos WHERE data_devolucao_real IS NULL
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Contar empréstimos sem data de devolução<br>
+    <strong>Localização:</strong> DashboardService.getEmprestimosAtivos()<br>
+    <strong>Tela:</strong> Dashboard - Card "Empréstimos Ativos"
+</div>
+
+<h4>Multas Pendentes</h4>
+<div class="sql-block">
+    SELECT SUM(valor_multa) as total FROM emprestimos WHERE pago = 0 AND valor_multa > 0
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Somar multas não pagas<br>
+    <strong>Localização:</strong> DashboardService.getMultasPendentes()<br>
+    <strong>Tela:</strong> Dashboard - Card "Multas Pendentes"
+</div>
+
+<h3>1.3 Dashboard - Listas e Gráficos</h3>
+
+<h4>Últimos Empréstimos</h4>
+<div class="sql-block">
+    SELECT e.id_emprestimo, est.nome as estudante_nome, l.titulo as livro_titulo,<br>
+    e.data_saida, e.data_prevista_devolucao, e.data_devolucao_real<br>
+    FROM emprestimos e<br>
+    JOIN estudantes est ON e.fk_estudante = est.id_estudante<br>
+    JOIN livros l ON e.fk_livro = l.id_livro<br>
+    ORDER BY e.data_saida DESC LIMIT 5
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Listar os 5 empréstimos mais recentes<br>
+    <strong>Localização:</strong> DashboardService.getUltimosEmprestimos()<br>
+    <strong>Tela:</strong> Dashboard - Lista "Últimos Empréstimos"
+</div>
+
+<h4>Top Livros Mais Emprestados</h4>
+<div class="sql-block">
+    SELECT l.titulo, COUNT(e.id_emprestimo) as total_emprestimos<br>
+    FROM livros l<br>
+    JOIN emprestimos e ON l.id_livro = e.fk_livro<br>
+    GROUP BY l.id_livro<br>
+    ORDER BY total_emprestimos DESC LIMIT 5
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Ranking dos livros mais populares<br>
+    <strong>Localização:</strong> DashboardService.getTopLivros()<br>
+    <strong>Tela:</strong> Dashboard - Lista "Top Livros"
+</div>
+
+<h4>Gráfico de Empréstimos por Mês</h4>
+<div class="sql-block">
+    SELECT MONTH(data_saida) as mes, COUNT(*) as total<br>
+    FROM emprestimos<br>
+    WHERE YEAR(data_saida) = YEAR(CURDATE())<br>
+    GROUP BY MONTH(data_saida)<br>
+    ORDER BY mes
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Dados para gráfico de barras mensal<br>
+    <strong>Localização:</strong> DashboardService.getEmprestimosPorMes()<br>
+    <strong>Tela:</strong> Dashboard - Gráfico
+</div>
+
+<h3>1.4 CRUD - Estudantes</h3>
+
+<h4>Listar Todos os Estudantes</h4>
+<div class="sql-block">
+    SELECT * FROM estudantes ORDER BY nome
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Carregar tabela com todos estudantes<br>
+    <strong>Localização:</strong> EstudanteDAO.listarTodos()<br>
+    <strong>Tela:</strong> Gestão de Estudantes (TableView)
+</div>
+
+<h4>Buscar por Nome (Busca Parcial)</h4>
+<div class="sql-block">
+    SELECT * FROM estudantes WHERE nome LIKE ? ORDER BY nome
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Filtrar estudantes pelo nome<br>
+    <strong>Localização:</strong> EstudanteDAO.buscarPorNome()<br>
+    <strong>Tela:</strong> Gestão de Estudantes (Campo de busca)
+</div>
+
+<h4>Buscar por Cartão RFID</h4>
+<div class="sql-block">
+    SELECT * FROM estudantes WHERE id_cartao_arduino = ?
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Encontrar estudante pelo cartão<br>
+    <strong>Localização:</strong> EstudanteDAO.buscarPorCartaoArduino()<br>
+    <strong>Tela:</strong> Empréstimos (leitor RFID)
+</div>
+
+<h3>1.5 CRUD - Livros</h3>
+
+<h4>Listar Todos os Livros</h4>
+<div class="sql-block">
+    SELECT l.*, d.nome_disciplina FROM livros l <br>
+    LEFT JOIN disciplinas d ON l.fk_disciplina = d.id_disciplina <br>
+    ORDER BY l.titulo
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Carregar tabela de livros com disciplina<br>
+    <strong>Localização:</strong> LivroDAO.listarTodos()<br>
+    <strong>Tela:</strong> Gestão de Livros (TableView)
+</div>
+
+<h4>Buscar Livro por ISBN</h4>
+<div class="sql-block">
+    SELECT l.*, d.nome_disciplina FROM livros l <br>
+    LEFT JOIN disciplinas d ON l.fk_disciplina = d.id_disciplina <br>
+    WHERE l.isbn = ?
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Buscar livro pelo código ISBN<br>
+    <strong>Localização:</strong> LivroDAO.buscarPorIsbn()<br>
+    <strong>Tela:</strong> Empréstimos (busca rápida)
+</div>
+
+<h4>Buscar Livro por Título (Busca Parcial)</h4>
+<div class="sql-block">
+    SELECT l.*, d.nome_disciplina FROM livros l <br>
+    LEFT JOIN disciplinas d ON l.fk_disciplina = d.id_disciplina <br>
+    WHERE l.titulo LIKE ? ORDER BY l.titulo
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Filtrar livros por título<br>
+    <strong>Localização:</strong> LivroDAO.buscarPorTitulo()<br>
+    <strong>Tela:</strong> Gestão de Livros (campo de busca)
+</div>
+
+<h3>1.6 CRUD - Empréstimos</h3>
+
+<h4>Empréstimos Ativos por Estudante</h4>
+<div class="sql-block">
+    SELECT * FROM emprestimos <br>
+    WHERE fk_estudante = ? AND data_devolucao_real IS NULL <br>
+    ORDER BY data_saida DESC
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Listar empréstimos em andamento de um estudante<br>
+    <strong>Localização:</strong> EmprestimoDAO.listarAtivosPorEstudante()<br>
+    <strong>Tela:</strong> Empréstimos (tabela de empréstimos ativos)
+</div>
+
+<h4>Empréstimos com Atraso</h4>
+<div class="sql-block">
+    SELECT * FROM emprestimos <br>
+    WHERE data_devolucao_real IS NULL AND data_prevista_devolucao < CURDATE()
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Identificar empréstimos vencidos<br>
+    <strong>Localização:</strong> EmprestimoDAO.listarEmprestimosAtrasados()<br>
+    <strong>Tela:</strong> Relatórios, Alertas
+</div>
+
+<h4>Verificar Multa Pendente do Estudante</h4>
+<div class="sql-block">
+    SELECT COUNT(*) FROM emprestimos <br>
+    WHERE fk_estudante = ? AND pago = 0 AND valor_multa > 0
+</div>
+<div class="descricao">
+    <strong>Objetivo:</strong> Impedir novos empréstimos com multa<br>
+    <strong>Localização:</strong> EmprestimoDAO.temMultaPendente()<br>
+    <strong>Tela:</strong> Empréstimos (antes de novo empréstimo)
+</div>
+
+<!-- ============================================ -->
+<h2>2. INSERÇÕES (INSERT)</h2>
+<!-- ============================================ -->
+
+<h3>2.1 Inserir Estudante</h3>
+<div class="sql-block">
+    INSERT INTO estudantes (nome, curso, id_cartao_arduino, idade, departamento, codigo_estudante)<br>
+    VALUES (?, ?, ?, ?, ?, ?)
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EstudanteDAO.inserir()<br>
+    <strong>Tela:</strong> Gestão de Estudantes (Botão Salvar)
+</div>
+
+<h3>2.2 Inserir Livro</h3>
+<div class="sql-block">
+    INSERT INTO livros (titulo, autor, ano_publicacao, isbn, status, categoria, unidades, fk_disciplina)<br>
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> LivroDAO.inserir()<br>
+    <strong>Tela:</strong> Gestão de Livros (Botão Salvar)
+</div>
+
+<h3>2.3 Inserir Empréstimo</h3>
+<div class="sql-block">
+    INSERT INTO emprestimos (fk_estudante, fk_livro, data_saida, data_prevista_devolucao, valor_multa, pago)<br>
+    VALUES (?, ?, ?, ?, ?, ?)
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EmprestimoDAO.inserir()<br>
+    <strong>Tela:</strong> Empréstimos (Botão "Realizar Empréstimo")
+</div>
+
+<h3>2.4 Inserir Usuário</h3>
+<div class="sql-block">
+    INSERT INTO usuarios (nome, usuario, senha, tipo, foto, ativo) VALUES (?, ?, ?, ?, ?, ?)
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> UsuarioDAO.inserir()<br>
+    <strong>Tela:</strong> Gestão de Usuários
+</div>
+
+<!-- ============================================ -->
+<h2>3. ATUALIZAÇÕES (UPDATE)</h2>
+<!-- ============================================ -->
+
+<h3>3.1 Atualizar Estudante</h3>
+<div class="sql-block">
+    UPDATE estudantes SET nome = ?, curso = ?, id_cartao_arduino = ?, idade = ?, departamento = ?, codigo_estudante = ?<br>
+    WHERE id_estudante = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EstudanteDAO.atualizar()<br>
+    <strong>Tela:</strong> Gestão de Estudantes (Botão Atualizar)
+</div>
+
+<h3>3.2 Atualizar Unidades do Livro (Após Empréstimo/Devolução)</h3>
+<div class="sql-block">
+    UPDATE livros SET unidades = ?, status = ? WHERE id_livro = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> LivroDAO.atualizarUnidades()<br>
+    <strong>Tela:</strong> Empréstimos (após empréstimo/devolução)<br>
+    <strong>Regra:</strong> Status muda para "Indisponível" se unidades = 0
+</div>
+
+<h3>3.3 Registrar Devolução</h3>
+<div class="sql-block">
+    UPDATE emprestimos SET data_devolucao_real = ?, valor_multa = ?, pago = ? <br>
+    WHERE id_emprestimo = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EmprestimoDAO.registrarDevolucao()<br>
+    <strong>Tela:</strong> Empréstimos (Botão "Realizar Devolução")
+</div>
+
+<h3>3.4 Pagar Multa</h3>
+<div class="sql-block">
+    UPDATE emprestimos SET pago = 1 WHERE id_emprestimo = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EmprestimoDAO.pagarMulta()<br>
+    <strong>Tela:</strong> Relatórios/Financeiro
+</div>
+
+<!-- ============================================ -->
+<h2>4. EXCLUSÕES (DELETE)</h2>
+<!-- ============================================ -->
+
+<h3>4.1 Deletar Estudante</h3>
+<div class="sql-block">
+    DELETE FROM estudantes WHERE id_estudante = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EstudanteDAO.deletar()<br>
+    <strong>Tela:</strong> Gestão de Estudantes (Botão Deletar)<br>
+    <strong>Regra:</strong> Verifica empréstimos ativos antes de deletar
+</div>
+
+<h3>4.2 Deletar Livro</h3>
+<div class="sql-block">
+    DELETE FROM livros WHERE id_livro = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> LivroDAO.deletar()<br>
+    <strong>Tela:</strong> Gestão de Livros (Botão Deletar)<br>
+    <strong>Regra:</strong> Verifica empréstimos ativos antes de deletar
+</div>
+
+<!-- ============================================ -->
+<h2>5. TRANSAÇÕES (Commit/Rollback)</h2>
+<!-- ============================================ -->
+
+<h3>5.1 Empréstimo (Transação com 2 operações)</h3>
+<div class="sql-block">
+    -- Operação 1: Inserir empréstimo<br>
+    INSERT INTO emprestimos (fk_estudante, fk_livro, data_saida, data_prevista_devolucao, valor_multa, pago)<br>
+    VALUES (?, ?, ?, ?, ?, ?)<br><br>
+    -- Operação 2: Atualizar unidades do livro<br>
+    UPDATE livros SET unidades = ?, status = ? WHERE id_livro = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EmprestimoDAO.inserir()<br>
+    <strong>Tela:</strong> Empréstimos<br>
+    <strong>Regra:</strong> Se uma operação falhar, tudo é desfeito (ROLLBACK)
+</div>
+
+<h3>5.2 Devolução (Transação com 2 operações)</h3>
+<div class="sql-block">
+    -- Operação 1: Registrar devolução<br>
+    UPDATE emprestimos SET data_devolucao_real = ?, valor_multa = ?, pago = ? WHERE id_emprestimo = ?<br><br>
+    -- Operação 2: Devolver unidade do livro<br>
+    UPDATE livros SET unidades = ?, status = ? WHERE id_livro = ?
+</div>
+<div class="descricao">
+    <strong>Localização:</strong> EmprestimoDAO.registrarDevolucao()<br>
+    <strong>Tela:</strong> Empréstimos (Botão "Realizar Devolução")
+</div>
+
+<!-- ============================================ -->
+<h2>6. FUNÇÕES AGREGADAS UTILIZADAS</h2>
+<!-- ============================================ -->
+
+<table>
+    <thead>
+    <tr><th>Função</th><th>Uso</th><th>Exemplo</th></tr>
+    </thead>
+    <tbody>
+    <tr><td>COUNT(*)</td><td>Contar registros</td><td>Total de estudantes, empréstimos ativos</td></tr>
+    <tr><td>SUM()</td><td>Somar valores</td><td>Total de unidades disponíveis, total de multas</td></tr>
+    <tr><td>MONTH()</td><td>Extrair mês</td><td>Gráfico de empréstimos por mês</td></tr>
+    <tr><td>YEAR()</td><td>Extrair ano</td><td>Gráfico de empréstimos por ano</td></tr>
+    <tr><td>CURDATE()</td><td>Data atual</td><td>Verificar atrasos, empréstimos ativos</td></tr>
+    </tbody>
+</table>
+
+<!-- ============================================ -->
+<h2>7. JUNÇÕES (JOIN) UTILIZADAS</h2>
+<!-- ============================================ -->
+
+<table>
+    <thead>
+    <tr><th>Tipo</th><th>Uso</th><th>Exemplo</th></tr>
+    </thead>
+    <tbody>
+    <tr><td>INNER JOIN</td><td>Dados relacionados</td><td>Empréstimos + Estudantes + Livros</td></tr>
+    <tr><td>LEFT JOIN</td><td>Tabela opcional</td><td>Livros + Disciplinas (pode não ter disciplina)</td></tr>
+    </tbody>
+</table>
+
+<!-- ============================================ -->
+<h2>8. RESUMO DOS MÉTODOS POR TELA</h2>
+<!-- ============================================ -->
+
+<table>
+    <thead>
+    <tr><th>Tela</th><th>SQL Operations</th></tr>
+    </thead>
+    <tbody>
+    <tr><td>Login</td><td>SELECT (autenticação)</td></tr>
+    <tr><td>Dashboard</td><td>SELECT (cards, listas, gráfico)</td></tr>
+    <tr><td>Gestão de Estudantes</td><td>INSERT, SELECT, UPDATE, DELETE</td></tr>
+    <tr><td>Gestão de Livros</td><td>INSERT, SELECT, UPDATE, DELETE</td></tr>
+    <tr><td>Empréstimos</td><td>INSERT, SELECT, UPDATE (transações)</td></tr>
+    <tr><td>Relatórios</td><td>SELECT (múltiplos com JOIN)</td></tr>
+    <tr><td>Gestão de Usuários</td><td>INSERT, SELECT, UPDATE, DELETE</td></tr>
+    </tbody>
+</table>
+
+<!-- ============================================ -->
+<h2>9. REGRAS DE NEGÓCIO IMPLEMENTADAS NO SQL</h2>
+<!-- ============================================ -->
+
+<ul>
+    <li><strong>Status do livro atualiza automaticamente</strong> quando unidades = 0</li>
+    <li><strong>Multa calculada automaticamente</strong> baseada em dias de atraso (R$ 2,00/dia)</li>
+    <li><strong>Limite de 3 empréstimos ativos por estudante</strong></li>
+    <li><strong>Não permite empréstimo com multa pendente</strong></li>
+    <li><strong>Não permite deletar registro com dependências ativas</strong></li>
+    <li><strong>UNIQUE KEY impede duplicação</strong> (ISBN, código estudante, cartão RFID)</li>
+</ul>
+
+<!-- ============================================ -->
+<h2>10. DIAGRAMA DO BANCO DE DADOS</h2>
+<!-- ============================================ -->
+
+<h3>Tabelas do Sistema</h3>
+
+<ul>
+    <li><strong>usuarios</strong> - id_usuario, nome, usuario, senha, tipo, foto, ativo, data_cadastro</li>
+    <li><strong>disciplinas</strong> - id_disciplina, nome_disciplina</li>
+    <li><strong>livros</strong> - id_livro, titulo, autor, ano_publicacao, isbn, status, categoria, unidades, fk_disciplina</li>
+    <li><strong>estudantes</strong> - id_estudante, nome, curso, id_cartao_arduino, data_cadastro, idade, departamento, codigo_estudante</li>
+    <li><strong>emprestimos</strong> - id_emprestimo, fk_estudante, fk_livro, data_saida, data_prevista_devolucao, data_devolucao_real, valor_multa, pago</li>
+</ul>
+
+<h3>Relacionamentos</h3>
+
+<ul>
+    <li>livros.fk_disciplina → disciplinas.id_disciplina</li>
+    <li>emprestimos.fk_estudante → estudantes.id_estudante</li>
+    <li>emprestimos.fk_livro → livros.id_livro</li>
+</ul>
+
+<hr>
+
+<div class="footer">
+    <p><strong>Universidade Rovuma</strong> | Prática de Base de Dados | Maio 2026</p>
+    <p>SISMON - Sistema de Gestão Bibliotecária</p>
+</div>
+
+</body>
+</html>
