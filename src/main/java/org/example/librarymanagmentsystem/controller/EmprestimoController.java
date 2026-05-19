@@ -156,7 +156,7 @@ public class EmprestimoController {
 
         new Thread(() -> {
             try {
-                Estudante estudante = estudanteDAO.buscarPorCartaoArduino(rfid);
+                Estudante estudante = estudanteDAO. buscarPorCartaoArduino(rfid);
                 Platform.runLater(() -> {
                     if (estudante != null) {
                         estudanteAtual = estudante;
