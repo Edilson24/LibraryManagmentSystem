@@ -95,7 +95,7 @@ public class DashBoardController implements Initializable {
     @FXML private TableColumn<Emprestimo, Integer> colEmprestimoId;
     @FXML private TableColumn<Emprestimo, String> colEmprestimoLivro, colDataSaida, colDataPrevista, colStatusEmprestimo;
     @FXML private TableColumn<Emprestimo, Double> colMultaEmprestimo;
-    private ObservableList<Emprestimo> emprestimosList;
+    @FXML private ObservableList<Emprestimo> emprestimosList;
 
     // ==================== COMPONENTES DA TELA RELATÓRIOS ====================
     @FXML private ComboBox<String> cbTipoRelatorio;
@@ -116,6 +116,7 @@ public class DashBoardController implements Initializable {
     private DashboardService dashboardService;
     private ObservableList<String> ultimosEmprestimosList;
     private ObservableList<String> topLivrosList;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
