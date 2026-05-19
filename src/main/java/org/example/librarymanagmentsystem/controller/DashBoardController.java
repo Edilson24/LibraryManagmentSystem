@@ -139,6 +139,7 @@ public class DashBoardController implements Initializable {
 
         carregarDadosDashboard();
         atualizarTabelaEmprestimo();
+        configurarTabelaEmprestimos();
     }
 
     private void configurarSpinner() {
@@ -817,6 +818,14 @@ public class DashBoardController implements Initializable {
         Stage loginStage = (Stage) dashboard_form.getScene().getWindow();
         loginStage.close();
     }
+
+
+    @FXML
+    public void configurarTabelaEmprestimos() {
+        emprestimoController.configurarTabela();
+    }
+
+
 
 
 }

@@ -90,7 +90,7 @@ public class EmprestimoController {
         configurarEventos();
     }
 
-    private void configurarTabela() {
+    public void configurarTabela() {
         colEmprestimoId.setCellValueFactory(new PropertyValueFactory<>("idEmprestimo"));
         colEmprestimoLivro.setCellValueFactory(cellData ->
                 new javafx.beans.property.SimpleStringProperty(
@@ -380,5 +380,9 @@ public class EmprestimoController {
     private void mostrarAviso(String msg) {
         Alert alert = new Alert(Alert.AlertType.WARNING, msg, ButtonType.OK);
         alert.showAndWait();
+    }
+
+    public EmprestimoController() {
+        this.colDataPrevista = colDataPrevista;
     }
 }
